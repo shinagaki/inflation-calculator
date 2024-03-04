@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import './App.css'
 import cpiUS from './data/cpi_us.json'
 import currencyJPY from './data/currency.json'
@@ -8,10 +7,13 @@ import { Link, Route, Switch, useLocation, useRoute } from 'wouter'
 const TopPage = () => {
   const [match, params] = useRoute('/:year/:currency/:amount')
   const [location, setLocation] = useLocation()
-  const [year, setYear] = useState(params?.year || '1950')
-  const [currency, setCurrency] = useState(params?.currency || 'USD')
-  const [amount, setAmount] = useState(params?.amount || '100')
+
+  const year = params?.year || '1950'
+  const currency = params?.currency || 'USD'
+  const amount = params?.amount || '100'
   let result = 0
+
+  console.log(year, currency, amount)
 
   if (match) {
     const cpi = Number(cpiUS.filter(data => data.year === year)[0]?.cpi) || 0
@@ -25,64 +27,102 @@ const TopPage = () => {
     } else {
       result = NaN
     }
-    // console.log(cpi, cpiNow, jpy)
   }
 
-  const handleBlur = () => {
-    console.log(params, `/${year}/${currency}/${amount}`)
-
-    setLocation(`/${year}/${currency}/${amount}`, { replace: true })
+  const handleChange = ({
+    yearNew,
+    currencyNew,
+    amountNew,
+  }: { yearNew: string; currencyNew: string; amountNew: string }) => {
+    setLocation(`/${yearNew}/${currencyNew}/${amountNew}`)
   }
 
   return (
     <>
-      <div className='bg-white dark:bg-gray-900 shadow-md rounded-lg px-8 py-6 max-w-xl'>
-        <form className='#' onBlur={handleBlur}>
-          <div className='mb-4'>
+      <div className='bg-white shadow-md rounded-lg px-8 py-6 max-w-xl'>
+        <div className='mb-10'>
+          <form className=''>
             <input
-              type='text'
+              type='number'
               id='year'
-              className='shadow-sm rounded-md w-24 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+              className='text-center shadow-sm rounded-md w-24 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
               placeholder='1950'
               required
               defaultValue={year}
+              min='1910'
+              max='2024'
+              step='1'
               onChange={e => {
-                setYear(e.target.value)
+                handleChange({
+                  yearNew: e.target.value,
+                  currencyNew: currency,
+                  amountNew: amount,
+                })
               }}
             />
             年の
             <input
-              type='amount'
+              type='number'
               id='amount'
-              className='shadow-sm rounded-md w-24 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+              className='text-right shadow-sm rounded-md w-40 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
               placeholder='1000'
               required
               defaultValue={amount}
+              min='0'
               onChange={e => {
-                setAmount(e.target.value)
+                handleChange({
+                  yearNew: year,
+                  currencyNew: currency,
+                  amountNew: e.target.value,
+                })
               }}
             />
-            <input
-              type='currency'
+            <select
               id='currency'
-              className='shadow-sm rounded-md w-24 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
-              placeholder='ドル'
+              className='text-center shadow-sm rounded-md w-40 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
               required
               defaultValue={currency}
               onChange={e => {
-                setCurrency(e.target.value)
+                handleChange({
+                  yearNew: year,
+                  currencyNew: e.target.value,
+                  amountNew: amount,
+                })
               }}
-            />
+            >
+              <option value='usd'>米ドル(USD)</option>
+              <option value='eur'>ユーロ(EUR)</option>
+              <option value='gbp'>英ポンド(GBP)</option>
+              <option value='aud'>豪ドル(AUD)</option>
+              <option value='cad'>カナダドル(CAD)</option>
+              <option value='cny'>中国人民元(CNY)</option>
+              {/* <option value='chf'>スイスフラン(chf)</option>
+              <option value='hkd'>香港ドル(HKD)</option>
+              <option value='krw'>韓国ウォン(KRW)</option>
+              <option value='sgd'>シンガポールドル(SGD)</option>
+              <option value='try'>トルコリラ(TRY)</option>
+              <option value='zar'>南アランド(ZAR)</option>
+              <option value='rub'>ロシアルーブル(RUB)</option>
+              <option value='nzd'>NZドル(NZD)</option>
+              <option value='mxn'>メキシコペソ(MXN)</option> */}
+              <option value='dem'>ドイツマルク(DEM)</option>
+              <option value='frf'>フランスフラン(FRF)</option>
+              {/* <option value='itl'>イタリアリラ(ITL)</option>
+              <option value='inr'>インドルピー(INR)</option> */}
+            </select>
             は、
+          </form>
+        </div>
+        {Number.isNaN(result) ? (
+          <div className='mb-4 text-center text-3xl'>計算できません</div>
+        ) : (
+          <div className='mb-4 text-center text-3xl'>
+            {new Intl.NumberFormat('ja-JP', {
+              style: 'currency',
+              currency: 'JPY',
+            }).format(result)}
           </div>
-          <button
-            type='submit'
-            className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mb-4'
-          >
-            換算
-          </button>
-          <div className='mb-4 text-center text-2xl'>{result}円です</div>
-        </form>
+        )}
       </div>
     </>
   )
