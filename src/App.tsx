@@ -1,114 +1,149 @@
+import { Box, Button, Checkbox, Group, TextInput } from '@mantine/core'
+import { useForm } from '@mantine/form'
+import { Link, Route, Switch, useLocation, useRoute } from 'wouter'
+
 import './App.css'
+
 import cpiUS from './data/cpi_us.json'
 import currencyJPY from './data/currency.json'
 
-import { Link, Route, Switch, useLocation, useRoute } from 'wouter'
+const currencies = [
+  { label: '米ドル', value: 'usd' },
+  { label: '日本円', value: 'jpy' },
+  { label: 'ユーロ', value: 'eur' },
+  { label: '英ポンド', value: 'gbp' },
+  { label: '豪ドル', value: 'aud' },
+  { label: 'カナダドル', value: 'cad' },
+  { label: '中国人民元', value: 'cny' },
+  { label: 'ドイツマルク', value: 'dem' },
+  { label: 'フランスフラン', value: 'frf' },
+  { label: 'スイスフラン', value: 'chf' },
+  { label: '香港ドル', value: 'hkd' },
+  { label: '韓国ウォン', value: 'krw' },
+  { label: 'シンガポールドル', value: 'sgd' },
+  { label: 'トルコリラ', value: 'try' },
+  { label: '南アランド', value: 'zar' },
+  { label: 'ロシアルーブル', value: 'rub' },
+  { label: 'NZドル', value: 'nzd' },
+  { label: 'メキシコペソ', value: 'mxn' },
+  { label: 'イタリアリラ', value: 'itl' },
+  { label: 'インドルピー', value: 'inr' },
+]
 
 const TopPage = () => {
   const [match, params] = useRoute('/:year/:currency/:amount')
-  const [location, setLocation] = useLocation()
+  const [_location, setLocation] = useLocation()
 
   const year = params?.year || '1950'
-  const currency = params?.currency || 'USD'
+  const currency = params?.currency || 'usd'
   const amount = params?.amount || '100'
   let result = 0
 
   console.log(year, currency, amount)
 
+  const calculate = (cpi: number, cpiNow: number, currencyRate: number) => {
+    if (cpi && cpiNow && currencyRate) {
+      return Math.round(Number(amount) * (cpiNow / cpi) * currencyRate)
+    }
+    return NaN
+  }
+
   if (match) {
     const cpi = Number(cpiUS.filter(data => data.year === year)[0]?.cpi) || 0
     const cpiNow =
       Number(cpiUS.filter(data => data.year === '2024')[0]?.cpi) || 0
-    const jpy =
+    const currencyRate =
       Number(currencyJPY.filter(data => data.currency === currency)[0]?.jpy) ||
       0
-    if (cpi && cpiNow && jpy) {
-      result = Math.round(Number(amount) * (cpiNow / cpi) * jpy)
-    } else {
-      result = NaN
-    }
+    result = calculate(cpi, cpiNow, currencyRate)
   }
 
-  const handleChange = ({
-    yearNew,
-    currencyNew,
-    amountNew,
-  }: { yearNew: string; currencyNew: string; amountNew: string }) => {
-    setLocation(`/${yearNew}/${currencyNew}/${amountNew}`)
+  const handleChangeYear = (yearNew: string) => {
+    setLocation(`/${yearNew}/${currency}/${amount}`)
   }
+  const handleChangeCurrency = (currencyNew: string) => {
+    console.log(currencyNew)
+    setLocation(`/${year}/${currencyNew}/${amount}`)
+  }
+  const handleChangeAmount = (amountNew: string) => {
+    setLocation(`/${year}/${currency}/${amountNew}`)
+  }
+
+  const form = useForm({
+    initialValues: {
+      email: '',
+      termsOfService: false,
+    },
+
+    validate: {
+      email: value => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+    },
+  })
 
   return (
     <>
       <div className='bg-white shadow-md rounded-lg px-8 py-6 max-w-xl'>
         <div className='mb-10'>
+          <form onSubmit={form.onSubmit(values => console.log(values))}>
+            <TextInput
+              withAsterisk
+              label='Email'
+              placeholder='your@email.com'
+              {...form.getInputProps('email')}
+            />
+
+            <Checkbox
+              mt='md'
+              label='I agree to sell my privacy'
+              {...form.getInputProps('termsOfService', { type: 'checkbox' })}
+            />
+
+            <Group justify='flex-end' mt='md'>
+              <Button type='submit'>Submit</Button>
+            </Group>
+          </form>
           <form className=''>
             <input
               type='number'
               id='year'
-              className='text-center shadow-sm rounded-md w-24 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
-              placeholder='1950'
+              className='text-center shadow-sm rounded-md w-24 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-xl'
+              placeholder='年'
               required
               defaultValue={year}
               min='1910'
               max='2024'
               step='1'
               onChange={e => {
-                handleChange({
-                  yearNew: e.target.value,
-                  currencyNew: currency,
-                  amountNew: amount,
-                })
+                handleChangeYear(e.target.value)
               }}
             />
             年の
             <input
               type='number'
               id='amount'
-              className='text-right shadow-sm rounded-md w-40 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+              className='text-right shadow-sm rounded-l-md w-40 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
               placeholder='1000'
               required
               defaultValue={amount}
               min='0'
               onChange={e => {
-                handleChange({
-                  yearNew: year,
-                  currencyNew: currency,
-                  amountNew: e.target.value,
-                })
+                handleChangeAmount(e.target.value)
               }}
             />
             <select
               id='currency'
-              className='text-center shadow-sm rounded-md w-40 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+              className='shadow-sm rounded-r-md w-40 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
               required
               defaultValue={currency}
               onChange={e => {
-                handleChange({
-                  yearNew: year,
-                  currencyNew: e.target.value,
-                  amountNew: amount,
-                })
+                handleChangeCurrency(e.target.value)
               }}
             >
-              <option value='usd'>米ドル(USD)</option>
-              <option value='eur'>ユーロ(EUR)</option>
-              <option value='gbp'>英ポンド(GBP)</option>
-              <option value='aud'>豪ドル(AUD)</option>
-              <option value='cad'>カナダドル(CAD)</option>
-              <option value='cny'>中国人民元(CNY)</option>
-              {/* <option value='chf'>スイスフラン(chf)</option>
-              <option value='hkd'>香港ドル(HKD)</option>
-              <option value='krw'>韓国ウォン(KRW)</option>
-              <option value='sgd'>シンガポールドル(SGD)</option>
-              <option value='try'>トルコリラ(TRY)</option>
-              <option value='zar'>南アランド(ZAR)</option>
-              <option value='rub'>ロシアルーブル(RUB)</option>
-              <option value='nzd'>NZドル(NZD)</option>
-              <option value='mxn'>メキシコペソ(MXN)</option> */}
-              <option value='dem'>ドイツマルク(DEM)</option>
-              <option value='frf'>フランスフラン(FRF)</option>
-              {/* <option value='itl'>イタリアリラ(ITL)</option>
-              <option value='inr'>インドルピー(INR)</option> */}
+              {currencies.map(currency => (
+                <option value={currency.value}>
+                  {currency.label}({currency.value.toUpperCase()})
+                </option>
+              ))}
             </select>
             は、
           </form>
