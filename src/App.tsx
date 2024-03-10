@@ -5,6 +5,12 @@ import './App.css'
 import cpiAll from './data/cpi_all.json'
 import currencyAPI from './data/currency_api.json'
 import { ChangeEvent } from 'react'
+import {
+  LineIcon,
+  LineShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+} from 'react-share'
 
 const currencies = [
   { label: '円', value: 'jpy', emoji: '🇯🇵' },
@@ -32,7 +38,9 @@ const amountMax = 10000000000000000
 const amountDefault = 100
 const yearMin = 1900
 const yearNow = new Date().getFullYear()
+const yearList = Array.from(Array(yearNow - yearMin).keys(), x => x + yearMin)
 const yearDefault = 1950
+const urlDomain = 'imaikura.creco.net'
 
 const TopPage = () => {
   const [match, params] = useRoute('/:year/:currency/:amount')
@@ -72,6 +80,8 @@ const TopPage = () => {
   let currency = 'usd'
   let amount = amountDefault.toString()
   let result = undefined
+  let resultStatement = ''
+  let shareStatement = ''
 
   if (match) {
     if (
@@ -97,11 +107,17 @@ const TopPage = () => {
     const currencyLine: currencyType = currencyAPI.data
     const currencyRate = currencyLine[currency.toUpperCase()] || 0
     result = calculate(cpi, cpiNow, currencyRate)
+    resultStatement = `${new Intl.NumberFormat('ja-JP').format(result)}円`
+    shareStatement = `${year}年の${new Intl.NumberFormat('ja-JP').format(
+      Number(amount),
+    )}${
+      currencies.filter(data => data.value === currency)[0].label
+    }は${resultStatement}`
   }
 
-  const handleChangeYear = (e: ChangeEvent<HTMLInputElement>) => {
-    if (validateYear(e.target.value)) {
-      setLocation(`/${e.target.value}/${currency}/${amount}`)
+  const handleChangeYear = (yearNew: string) => {
+    if (validateYear(yearNew)) {
+      setLocation(`/${yearNew}/${currency}/${amount}`)
     }
   }
   const handleChangeCurrency = (currencyNew: string) => {
@@ -117,63 +133,84 @@ const TopPage = () => {
 
   return (
     <>
-      <div className='bg-white shadow-md rounded-lg px-8 py-6 max-w-xl'>
-        <div className='mb-10'>
+      <div className='bg-white/50 hover:bg-white/60 backdrop-blur-lg border border-white/25 shadow-lg rounded-lg px-8 py-6 max-w-xl'>
+        <div className='mb-5 sm:mb-10'>
           <form className='flex flex-col sm:flex-row gap-2'>
             <div className=''>
               <label
                 htmlFor='year'
-                className='block text-sm font-medium leading-6 text-gray-900'
+                className='block text-sm font-medium leading-6 text-zinc-900'
               >
                 西暦
               </label>
               <div className='relative my-2 rounded-md shadow-sm'>
-                <input
-                  type='number'
-                  name='year'
+                <select
                   id='year'
-                  autoComplete='username'
-                  className='block w-full rounded-md border-0  py-1.5 pl-2 pr-10 text-center text-xl text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-                  placeholder='年'
+                  name='year'
+                  className='w-full rounded-md border-0 py-1.5 pl-4 pr-6 text-center text-xl text-zinc-900 ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                   required
-                  defaultValue={year}
-                  min={yearMin}
-                  max={yearNow}
-                  step='1'
                   onChange={e => {
-                    handleChangeYear(e)
+                    handleChangeYear(e.currentTarget.value)
                   }}
-                />
-                <label htmlFor='year'>
-                  <div className='absolute inset-y-0 right-2 flex items-center select-none'>
-                    <div className='h-full w-10 leading-10 text-center text-gray-500 sm:text-sm sm:leading-9'>
-                      年
-                    </div>
-                  </div>
-                </label>
+                  value={year}
+                >
+                  {yearList.map(year => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+                <div className='block absolute inset-y-2 right-7 items-center pointer-events-none text-zinc-500 text-sm sm:inset-y-1.5 sm:text-xs sm:leading-6'>
+                  年
+                </div>
               </div>
             </div>
             <div className=''>
               <label
                 htmlFor='amount'
-                className='block text-sm font-medium leading-6 text-gray-900'
+                className='block text-sm font-medium leading-6 text-zinc-900'
               >
                 金額
               </label>
               <div className='relative my-2 rounded-md shadow-sm'>
                 <input
-                  type='number'
+                  type='text'
                   name='amount'
                   id='amount'
-                  className='block w-full rounded-md border-0 py-1.5 pl-2 pr-44 text-center text-xl text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-                  placeholder='100'
-                  required
-                  defaultValue={amount}
-                  min='0'
-                  max={amountMax}
+                  autoComplete='off'
+                  className='w-full rounded-md border-0 py-1.5 pl-2 pr-44 text-center text-xl text-zinc-900 ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                  // placeholder='100'
+                  // required
+                  // min='0'
+                  // max={amountMax}
                   onChange={e => {
-                    handleChangeAmount(e)
+                    console.log(
+                      e.currentTarget.value,
+                      e.currentTarget.value.indexOf('.'),
+                      e.currentTarget.value.length,
+                    )
+                    if (/^([1-9]\d*|0)(\.\d+)?$/.test(e.currentTarget.value)) {
+                      e.currentTarget.value = Number(
+                        e.currentTarget.value,
+                      ).toString()
+                      handleChangeAmount(e)
+                    } else {
+                      if (
+                        e.currentTarget.value.indexOf('.') ===
+                        e.currentTarget.value.length - 1
+                      ) {
+                        return
+                      }
+                      e.currentTarget.value = Number(
+                        e.currentTarget.value,
+                      ).toString()
+                      return
+                    }
                   }}
+                  defaultValue={amount}
+                  inputMode='numeric'
+                  // pattern='^([1-9]\d*|0)(\.\d+)?$'
+                  pattern='\d'
                 />
                 <div className='absolute inset-y-0 right-0 flex items-center'>
                   <label htmlFor='currency' className='sr-only'>
@@ -182,16 +219,16 @@ const TopPage = () => {
                   <select
                     id='currency'
                     name='currency'
-                    className='h-full w-40 rounded-r-md border-gray-600 border-l border-opacity-20 border-dashed bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm'
+                    className='h-full w-40 rounded-r-md border-zinc-600 border-l border-opacity-20 border-dashed bg-transparent py-0 pl-2 pr-7 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm'
                     required
-                    defaultValue={currency}
                     onChange={e => {
                       handleChangeCurrency(e.target.value)
                     }}
+                    value={currency}
                   >
                     {currencies.map(currency => (
                       <option key={currency.value} value={currency.value}>
-                        {/* {currency.emoji} */}
+                        {currency.emoji}&nbsp;
                         {currency.label}
                         {/* ({currency.value.toUpperCase()}) */}
                       </option>
@@ -202,20 +239,34 @@ const TopPage = () => {
             </div>
           </form>
         </div>
-        <hr className='h-px my-8 bg-gray-200 border-0' />
+        <hr className='h-px bg-zinc-200 border-0 sm:my-8' />
         {typeof result === 'undefined' ? (
           <div className='my-6 text-center'>
             <h3 className='text-xl'>使い方</h3>
             <p>西暦と金額と通貨を入れる</p>
           </div>
         ) : (
-          <div className='my-6 text-center text-3xl'>
-            {Number.isNaN(result)
-              ? '計算できません'
-              : new Intl.NumberFormat('ja-JP', {
-                  style: 'currency',
-                  currency: 'JPY',
-                }).format(result)}
+          <div className='flex justify-center items-center gap-4'>
+            <div className='my-6 text-center text-3xl'>
+              {Number.isNaN(result) ? '計算できません' : resultStatement}
+            </div>
+            {!Number.isNaN(result) && (
+              <div className='flex gap-1'>
+                <TwitterShareButton
+                  url={`https://${urlDomain}${_location}`}
+                  title={shareStatement}
+                  hashtags={['今いくら']}
+                >
+                  <TwitterIcon size='32' round />
+                </TwitterShareButton>
+                <LineShareButton
+                  url={`https://${urlDomain}${_location}`}
+                  title={shareStatement}
+                >
+                  <LineIcon size='32' round />
+                </LineShareButton>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -224,19 +275,48 @@ const TopPage = () => {
 }
 
 const App = () => (
-  <div className='h-dvh flex flex-col w-full bg-slate-100 text-gray-900'>
-    <header>
-      <div className='rounded-br-xl flex p-4 w-1/2 justify-between bg-slate-300'>
-        <h1 className='text-lg font-bold'>今いくら？</h1>
-        <nav className='flex flex-row space-x-10'>
-          <Link href='/'>TOP</Link>
-          <Link href='/1950/usd/100' className='link'>
-            Calculate
+  <div className='min-h-dvh w-full flex flex-col text-zinc-900 bg-[url("/img/background.webp")] bg-cover'>
+    <header className='flex items-center justify-center bg-gradient-to-b from-white/95 via-white/70 via-80% to-white/0 pb-2 sm:pb-10'>
+      <div className='flex flex-col items-center justify-center py-2 text-center sm:py-10'>
+        <h1 className='my-4 font-bold text-6xl tracking-tight bg-gradient-to-b from-zinc-300 via-zinc-500 via-20% to-zinc-700 bg-clip-text text-transparent first-letter:text-7xl  first-letter:pr-2'>
+          <Link href='/' className='link'>
+            今いくら
           </Link>
-        </nav>
+        </h1>
+        <p className='text-sm sm:text-base text-zinc-700 mx-2 my-2 leading-2 sm:leading-6'>
+          あの時代のドルってどれくらいの価値なんだろう？
+          <br />
+          西暦と金額を入れるだけで、現在の日本円に換算します
+        </p>
+        <div className='flex flex-col items-center justify-center text-xs sm:text-base'>
+          <h3 className='text-zinc-900 font-bold pr-5'>計算例</h3>
+          <ul className='flex space-x-5 underline whitespace-nowrap'>
+            <li>
+              <Link href='/1950/usd/100' className='link hover:text-zinc-500'>
+                1950年の
+                <wbr />
+                100ドル
+              </Link>
+            </li>
+            <li>
+              <Link href='/1980/jpy/10000' className='link hover:text-zinc-500'>
+                1980年の
+                <wbr />
+                10,000円
+              </Link>
+            </li>
+            <li>
+              <Link href='/2010/eur/50000' className='link hover:text-zinc-500'>
+                2010年の
+                <wbr />
+                50,000ユーロ
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
     </header>
-    <main className='flex-grow flex items-center justify-center dark:bg-gray-950'>
+    <main className='flex-grow flex items-center justify-center'>
       <Switch>
         <Route path='/' component={TopPage} />
         <Route path='/:year/:currency/:price' component={TopPage} />
@@ -246,8 +326,11 @@ const App = () => (
       </Switch>
     </main>
     <footer>
-      <div className='bg-slate-300 w-1/2 rounded-tl-xl p-4 ml-auto text-right'>
-        Copyright 2024
+      <div className='p-4 text-sm text-right text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0'>
+        ©{yearNow}{' '}
+        <Link href='https://creco.net/' className='link underline'>
+          creco
+        </Link>
       </div>
     </footer>
   </div>

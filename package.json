@@ -12,11 +12,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mantine/core": "^7.6.1",
-    "@mantine/hooks": "^7.6.1",
+    "country-flag-emoji-polyfill": "^0.1.8",
     "csvtojson": "^2.0.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-share": "^5.1.0",
     "wouter": "^3.0.1"
   },
   "devDependencies": {
