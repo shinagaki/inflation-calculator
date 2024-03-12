@@ -227,7 +227,7 @@ const TopPage = () => {
                   }}
                   defaultValue={amount}
                   inputMode='numeric'
-                  pattern='^([1-9][\d|,]*|0)(\.\d+)?$'
+                  pattern='^([1-9][\d,]*|0)(\.\d+)?$'
                   ref={amountRef}
                 />
                 <div className='absolute inset-y-0 right-0 flex items-center'>
