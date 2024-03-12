@@ -1,10 +1,5 @@
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { Link, Route, Switch, useLocation, useRoute } from 'wouter'
-
-import './App.css'
-
-import cpiAll from './data/cpi_all.json'
-import currencyAPI from './data/currency_api.json'
-import { ChangeEvent, useRef } from 'react'
 import {
   EmailIcon,
   EmailShareButton,
@@ -13,6 +8,8 @@ import {
   TwitterIcon,
   TwitterShareButton,
 } from 'react-share'
+import cpiAll from './data/cpi_all.json'
+import './App.css'
 
 const currencies = [
   { label: '円', value: 'jpy', emoji: '🇯🇵' },
@@ -37,16 +34,34 @@ const currencies = [
   // { label: 'インドルピー', value: 'inr', emoji: '🇮🇳' },
 ]
 const amountMax = 10000000000000000
-const amountDefault = 100
+const amountDefault = 0
 const yearMin = 1900
 const yearNow = new Date().getFullYear()
-const yearList = Array.from(Array(yearNow - yearMin).keys(), x => x + yearMin)
+const yearList = Array.from(
+  Array(yearNow - yearMin + 1).keys(),
+  x => x + yearMin,
+)
 const yearDefault = 1950
 const urlDomain = 'imaikura.creco.net'
 
 const TopPage = () => {
   const [match, params] = useRoute('/:year/:currency/:amount')
   const [location, setLocation] = useLocation()
+  const [currencyRates, setCurrencyRates] = useState<ExchangeRatesAPI>([])
+  interface ExchangeRatesAPI {
+    [key: string]: ExchangeRate
+  }
+  interface ExchangeRate {
+    value: number
+  }
+
+  useEffect(() => {
+    fetch('https://api.coingecko.com/api/v3/exchange_rates')
+      .then(res => res.json())
+      .then(data => {
+        setCurrencyRates(data.rates)
+      })
+  }, [])
 
   const validateYear = (year: string) => {
     const yearNumber = Math.trunc(Number(year))
@@ -106,11 +121,9 @@ const TopPage = () => {
       data => data.year === yearNow.toString(),
     )[0]
     const cpiNow = Number(cpiNowLine[currency]) || 0
+    const exchangeRate = currencyRates.jpy.value / currencyRates[currency].value
 
-    type currencyType = Record<string, number>
-    const currencyLine: currencyType = currencyAPI.data
-    const currencyRate = currencyLine[currency.toUpperCase()] || 0
-    result = calculate(cpi, cpiNow, currencyRate)
+    result = calculate(cpi, cpiNow, exchangeRate)
     resultStatement = `${new Intl.NumberFormat('ja-JP').format(result)}円`
     shareStatement = `${year}年の${new Intl.NumberFormat('ja-JP').format(
       Number(amount),
@@ -144,7 +157,12 @@ const TopPage = () => {
     <>
       <div className='bg-white/50 hover:bg-white/60 backdrop-blur-lg border border-white/25 shadow-lg rounded-lg px-8 py-6 max-w-xl'>
         <div className='mb-5 sm:mb-10'>
-          <form className='flex flex-col sm:flex-row gap-2'>
+          <form
+            className='flex flex-col sm:flex-row gap-2'
+            onSubmit={e => {
+              e.preventDefault()
+            }}
+          >
             <div className=''>
               <label
                 htmlFor='year'
@@ -156,7 +174,7 @@ const TopPage = () => {
                 <select
                   id='year'
                   name='year'
-                  className='w-full rounded-md border-0 py-1.5 pl-4 pr-6 text-center text-xl text-zinc-900 ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                  className='w-full rounded-md border-0 py-1.5 pl-4 pr-6 text-center text-xl text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                   required
                   onChange={e => {
                     handleChangeYear(e.currentTarget.value)
@@ -187,11 +205,12 @@ const TopPage = () => {
                   name='amount'
                   id='amount'
                   autoComplete='off'
-                  className='w-full rounded-md border-0 py-1.5 pl-2 pr-44 text-center text-xl text-zinc-900 ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-                  placeholder='100'
+                  className='w-full rounded-md border-0 py-1.5 pl-2 pr-44 text-center text-xl text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                   required
-                  min='0'
-                  max={amountMax}
+                  maxLength={
+                    new Intl.NumberFormat('ja-JP').format(amountMax).toString()
+                      .length
+                  }
                   onChange={e => {
                     let inputNumber = e.currentTarget.value
                     // カンマの削除
@@ -250,7 +269,6 @@ const TopPage = () => {
                       <option key={currency.value} value={currency.value}>
                         {currency.emoji}&nbsp;
                         {currency.label}
-                        {/* ({currency.value.toUpperCase()}) */}
                       </option>
                     ))}
                   </select>
@@ -341,7 +359,7 @@ const App = () => (
           </ul>
           <h3 className='text-zinc-900 font-bold pr-5'>制限事項</h3>
           <p>日本円は1947年、ユーロは1996年から計算ができます</p>
-          <p>為替は2024年3月12日時点のデータとなります</p>
+          <p>為替レートは最新のデータを使用しています</p>
         </div>
       </div>
     </header>
@@ -354,10 +372,58 @@ const App = () => (
         </Route>
       </Switch>
     </main>
-    <footer>
-      <div className='p-4 text-xs sm:text-sm text-right text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0'>
+    <footer className='w-full flex items-center justify-between p-2 sm:p-4 text-xs sm:text-sm text-right text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0'>
+      <div className='flex text-[0.75em]'>
+        <p>ソース：</p>
+        <ul className='flex space-x-2 whitespace-nowrap'>
+          <li>
+            <Link
+              href='https://www.stat.go.jp/data/cpi/'
+              className='link underline hover:text-zinc-400'
+            >
+              🇯🇵 総務省
+            </Link>
+          </li>
+          <li>
+            <Link
+              href='https://www.bls.gov/cpi/'
+              className='link underline hover:text-zinc-400'
+            >
+              🇺🇸 DOL
+            </Link>
+          </li>
+          <li>
+            <Link
+              href='https://www.ons.gov.uk/economy/inflationandpriceindices/'
+              className='link underline hover:text-zinc-400'
+            >
+              🇬🇧 ONS
+            </Link>
+          </li>
+          <li>
+            <Link
+              href='https://ec.europa.eu/eurostat'
+              className='link underline hover:text-zinc-400'
+            >
+              🇪🇺 eurostat
+            </Link>
+          </li>
+          <li>
+            <Link
+              href='https://www.coingecko.com/'
+              className='link underline hover:text-zinc-400'
+            >
+              CoinGecko
+            </Link>
+          </li>
+        </ul>
+      </div>
+      <div className='text-right'>
         ©{yearNow}{' '}
-        <Link href='https://creco.net/' className='link underline'>
+        <Link
+          href='https://creco.net/'
+          className='link underline hover:text-zinc-400'
+        >
           creco
         </Link>
       </div>
