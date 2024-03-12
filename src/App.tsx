@@ -4,7 +4,7 @@ import './App.css'
 
 import cpiAll from './data/cpi_all.json'
 import currencyAPI from './data/currency_api.json'
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useRef } from 'react'
 import {
   LineIcon,
   LineShareButton,
@@ -44,7 +44,7 @@ const urlDomain = 'imaikura.creco.net'
 
 const TopPage = () => {
   const [match, params] = useRoute('/:year/:currency/:amount')
-  const [_location, setLocation] = useLocation()
+  const [location, setLocation] = useLocation()
 
   const validateYear = (year: string) => {
     const yearNumber = Math.trunc(Number(year))
@@ -61,8 +61,8 @@ const TopPage = () => {
   }
   const validateAmount = (amount: string) => {
     // const amountNumber = Number(amount)
-    // 小数点三桁まで
-    const amountNumber = Number(parseFloat(amount).toFixed(3))
+    // 小数点2桁まで
+    const amountNumber = Number(parseFloat(amount).toFixed(2))
     return (
       !Number.isNaN(amountNumber) &&
       amount === amountNumber.toString() &&
@@ -83,6 +83,7 @@ const TopPage = () => {
   let result = undefined
   let resultStatement = ''
   let shareStatement = ''
+  const amountRef = useRef<HTMLInputElement>(null)
 
   if (match) {
     if (
@@ -114,6 +115,11 @@ const TopPage = () => {
     )}${
       currencies.filter(data => data.value === currency)[0].label
     }は${resultStatement}`
+  }
+  if (amountRef.current) {
+    amountRef.current.value = new Intl.NumberFormat('ja-JP').format(
+      Number(parseFloat(amount).toFixed(2)),
+    )
   }
 
   const handleChangeYear = (yearNew: string) => {
@@ -207,7 +213,8 @@ const TopPage = () => {
                     }
                     if (
                       !Number.isNaN(parseFloat(inputNumber)) &&
-                      parseFloat(inputNumber) >= 0
+                      parseFloat(inputNumber) >= 0 &&
+                      parseFloat(inputNumber) <= amountMax
                     ) {
                       inputNumber = parseFloat(inputNumber)
                         .toFixed(decimalDigit)
@@ -218,14 +225,10 @@ const TopPage = () => {
                     e.currentTarget.value = inputNumber
                     handleChangeAmount(e)
                   }}
-                  onBlur={e => {
-                    e.currentTarget.value = new Intl.NumberFormat(
-                      'ja-JP',
-                    ).format(Number(e.currentTarget.value))
-                  }}
                   defaultValue={amount}
                   inputMode='numeric'
-                  pattern='^([1-9]\d*|0)(\.\d+)?$'
+                  pattern='^([1-9][\d|,]*|0)(\.\d+)?$'
+                  ref={amountRef}
                 />
                 <div className='absolute inset-y-0 right-0 flex items-center'>
                   <label htmlFor='currency' className='sr-only'>
@@ -257,8 +260,8 @@ const TopPage = () => {
         <hr className='h-px bg-zinc-200 border-0 sm:my-8' />
         {typeof result === 'undefined' ? (
           <div className='my-6 text-center'>
-            <h3 className='text-xl'>使い方</h3>
-            <p>西暦と金額と通貨を入れる</p>
+            <h3 className='text-xl'>"今いくら"の使い方</h3>
+            <p>西暦を選択し、金額に数値を入れて、通貨を選択します</p>
           </div>
         ) : (
           <div className='flex justify-center items-center gap-4'>
@@ -268,14 +271,14 @@ const TopPage = () => {
             {!Number.isNaN(result) && (
               <div className='flex gap-1'>
                 <TwitterShareButton
-                  url={`https://${urlDomain}${_location}`}
+                  url={`https://${urlDomain}${location}`}
                   title={shareStatement}
                   hashtags={['今いくら']}
                 >
                   <TwitterIcon size='32' round />
                 </TwitterShareButton>
                 <LineShareButton
-                  url={`https://${urlDomain}${_location}`}
+                  url={`https://${urlDomain}${location}`}
                   title={shareStatement}
                 >
                   <LineIcon size='32' round />
@@ -291,7 +294,7 @@ const TopPage = () => {
 
 const App = () => (
   <div className='min-h-dvh w-full flex flex-col text-zinc-900 bg-[url("/img/background.webp")] bg-cover'>
-    <header className='flex items-center justify-center bg-gradient-to-b from-white/95 via-white/70 via-80% to-white/0 pb-2 sm:pb-10'>
+    <header className='flex items-center justify-center bg-gradient-to-b from-white/95 via-white/70 via-80% to-white/0 pb-5 sm:pb-10'>
       <div className='flex flex-col items-center justify-center py-2 text-center sm:py-10'>
         <h1 className='my-4 font-bold text-6xl tracking-tight bg-gradient-to-b from-zinc-300 via-zinc-500 via-20% to-zinc-700 bg-clip-text text-transparent first-letter:text-7xl  first-letter:pr-2'>
           <Link href='/' className='link'>
@@ -305,7 +308,7 @@ const App = () => (
         </p>
         <div className='flex flex-col items-center justify-center text-xs sm:text-base'>
           <h3 className='text-zinc-900 font-bold pr-5'>計算例</h3>
-          <ul className='flex space-x-5 underline whitespace-nowrap'>
+          <ul className='flex space-x-5 underline whitespace-nowrap mb-2'>
             <li>
               <Link href='/1950/usd/100' className='link hover:text-zinc-500'>
                 1950年の
@@ -328,6 +331,8 @@ const App = () => (
               </Link>
             </li>
           </ul>
+          <h3 className='text-zinc-900 font-bold pr-5'>制限事項</h3>
+          <p>日本円は1947年、ユーロは1996年から計算ができます</p>
         </div>
       </div>
     </header>
