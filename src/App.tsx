@@ -6,6 +6,8 @@ import cpiAll from './data/cpi_all.json'
 import currencyAPI from './data/currency_api.json'
 import { ChangeEvent, useRef } from 'react'
 import {
+  EmailIcon,
+  EmailShareButton,
   LineIcon,
   LineShareButton,
   TwitterIcon,
@@ -146,7 +148,7 @@ const TopPage = () => {
             <div className=''>
               <label
                 htmlFor='year'
-                className='block text-sm font-medium leading-6 text-zinc-900'
+                className='block text-sm font-medium leading-2 sm:leading-6 text-zinc-900'
               >
                 西暦
               </label>
@@ -175,7 +177,7 @@ const TopPage = () => {
             <div className=''>
               <label
                 htmlFor='amount'
-                className='block text-sm font-medium leading-6 text-zinc-900'
+                className='block text-sm font-medium  leading-2 sm:leading-6 text-zinc-900'
               >
                 金額
               </label>
@@ -260,12 +262,11 @@ const TopPage = () => {
         <hr className='h-px bg-zinc-200 border-0 sm:my-8' />
         {typeof result === 'undefined' ? (
           <div className='my-6 text-center'>
-            <h3 className='text-xl'>"今いくら"の使い方</h3>
             <p>西暦を選択し、金額に数値を入れて、通貨を選択します</p>
           </div>
         ) : (
           <div className='flex justify-center items-center gap-4'>
-            <div className='my-6 text-center text-3xl'>
+            <div className='my-6 text-center text-2xl sm:text-3xl'>
               {Number.isNaN(result) ? '計算できません' : resultStatement}
             </div>
             {!Number.isNaN(result) && (
@@ -283,6 +284,13 @@ const TopPage = () => {
                 >
                   <LineIcon size='32' round />
                 </LineShareButton>
+                <EmailShareButton
+                  subject={'今いくら'}
+                  body={shareStatement}
+                  url={`https://${urlDomain}${location}`}
+                >
+                  <EmailIcon size='32' round />
+                </EmailShareButton>
               </div>
             )}
           </div>
@@ -295,8 +303,8 @@ const TopPage = () => {
 const App = () => (
   <div className='min-h-dvh w-full flex flex-col text-zinc-900 bg-[url("/img/background.webp")] bg-cover'>
     <header className='flex items-center justify-center bg-gradient-to-b from-white/95 via-white/70 via-80% to-white/0 pb-5 sm:pb-10'>
-      <div className='flex flex-col items-center justify-center py-2 text-center sm:py-10'>
-        <h1 className='my-4 font-bold text-6xl tracking-tight bg-gradient-to-b from-zinc-300 via-zinc-500 via-20% to-zinc-700 bg-clip-text text-transparent first-letter:text-7xl  first-letter:pr-2'>
+      <div className='flex flex-col items-center justify-center py-0 text-center sm:py-10'>
+        <h1 className='my-2 sm:my-4 font-bold text-4xl sm:text-6xl tracking-tight bg-gradient-to-b from-zinc-300 via-zinc-500 via-20% to-zinc-700 bg-clip-text text-transparent sm:first-letter:text-7xl   first-letter:text-5xl first-letter:pr-2'>
           <Link href='/' className='link'>
             今いくら
           </Link>
@@ -306,7 +314,7 @@ const App = () => (
           <br />
           西暦と金額を入れるだけで、現在の日本円に換算します
         </p>
-        <div className='flex flex-col items-center justify-center text-xs sm:text-base'>
+        <div className='flex flex-col items-center justify-center text-xs sm:text-sm'>
           <h3 className='text-zinc-900 font-bold pr-5'>計算例</h3>
           <ul className='flex space-x-2 underline whitespace-nowrap mb-2'>
             <li>
@@ -347,7 +355,7 @@ const App = () => (
       </Switch>
     </main>
     <footer>
-      <div className='p-4 text-sm text-right text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0'>
+      <div className='p-4 text-xs sm:text-sm text-right text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0'>
         ©{yearNow}{' '}
         <Link href='https://creco.net/' className='link underline'>
           creco
