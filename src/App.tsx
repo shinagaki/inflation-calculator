@@ -56,11 +56,13 @@ const TopPage = () => {
     )
   }
   const validateCurrency = (currency: string) => {
-    const currenciesAvailable = ['usd', 'jpy', 'eur', 'gbp', 'cny']
+    const currenciesAvailable = ['usd', 'jpy', 'eur', 'gbp']
     return currenciesAvailable.includes(currency)
   }
   const validateAmount = (amount: string) => {
-    const amountNumber = Number(amount)
+    // const amountNumber = Number(amount)
+    // 小数点三桁まで
+    const amountNumber = Number(parseFloat(amount).toFixed(3))
     return (
       !Number.isNaN(amountNumber) &&
       amount === amountNumber.toString() &&
@@ -68,7 +70,6 @@ const TopPage = () => {
       amountNumber <= amountMax
     )
   }
-
   const calculate = (cpi: number, cpiNow: number, currencyRate: number) => {
     if (cpi && cpiNow && currencyRate) {
       return Math.round(Number(amount) * (cpiNow / cpi) * currencyRate)
@@ -179,38 +180,52 @@ const TopPage = () => {
                   id='amount'
                   autoComplete='off'
                   className='w-full rounded-md border-0 py-1.5 pl-2 pr-44 text-center text-xl text-zinc-900 ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-                  // placeholder='100'
-                  // required
-                  // min='0'
-                  // max={amountMax}
+                  placeholder='100'
+                  required
+                  min='0'
+                  max={amountMax}
                   onChange={e => {
-                    console.log(
-                      e.currentTarget.value,
-                      e.currentTarget.value.indexOf('.'),
-                      e.currentTarget.value.length,
-                    )
-                    if (/^([1-9]\d*|0)(\.\d+)?$/.test(e.currentTarget.value)) {
-                      e.currentTarget.value = Number(
-                        e.currentTarget.value,
-                      ).toString()
-                      handleChangeAmount(e)
-                    } else {
-                      if (
-                        e.currentTarget.value.indexOf('.') ===
-                        e.currentTarget.value.length - 1
-                      ) {
-                        return
-                      }
-                      e.currentTarget.value = Number(
-                        e.currentTarget.value,
-                      ).toString()
+                    let inputNumber = e.currentTarget.value
+                    // カンマの削除
+                    inputNumber = inputNumber.replace(/,/g, '')
+
+                    const digit =
+                      inputNumber.indexOf('.') >= 0
+                        ? inputNumber.indexOf('.')
+                        : inputNumber.length
+                    const decimalDigit =
+                      inputNumber.indexOf('.') >= 0
+                        ? inputNumber.length - digit - 1
+                        : 0
+                    if (
+                      inputNumber.indexOf('.') >= 0 &&
+                      inputNumber.length > 1 &&
+                      decimalDigit === 0
+                    ) {
+                      // 任意の数字に続いて小数点を入力した場合はサニタイズしない
                       return
                     }
+                    if (
+                      !Number.isNaN(parseFloat(inputNumber)) &&
+                      parseFloat(inputNumber) >= 0
+                    ) {
+                      inputNumber = parseFloat(inputNumber)
+                        .toFixed(decimalDigit)
+                        .toString()
+                    } else {
+                      inputNumber = '0'
+                    }
+                    e.currentTarget.value = inputNumber
+                    handleChangeAmount(e)
+                  }}
+                  onBlur={e => {
+                    e.currentTarget.value = new Intl.NumberFormat(
+                      'ja-JP',
+                    ).format(Number(e.currentTarget.value))
                   }}
                   defaultValue={amount}
                   inputMode='numeric'
-                  // pattern='^([1-9]\d*|0)(\.\d+)?$'
-                  pattern='\d'
+                  pattern='^([1-9]\d*|0)(\.\d+)?$'
                 />
                 <div className='absolute inset-y-0 right-0 flex items-center'>
                   <label htmlFor='currency' className='sr-only'>
