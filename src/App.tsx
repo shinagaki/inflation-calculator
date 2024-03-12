@@ -333,6 +333,7 @@ const App = () => (
           </ul>
           <h3 className='text-zinc-900 font-bold pr-5'>制限事項</h3>
           <p>日本円は1947年、ユーロは1996年から計算ができます</p>
+          <p>為替は2024年3月12日時点のデータとなります</p>
         </div>
       </div>
     </header>
