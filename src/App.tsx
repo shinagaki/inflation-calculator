@@ -308,7 +308,7 @@ const App = () => (
         </p>
         <div className='flex flex-col items-center justify-center text-xs sm:text-base'>
           <h3 className='text-zinc-900 font-bold pr-5'>計算例</h3>
-          <ul className='flex space-x-5 underline whitespace-nowrap mb-2'>
+          <ul className='flex space-x-2 underline whitespace-nowrap mb-2'>
             <li>
               <Link href='/1950/usd/100' className='link hover:text-zinc-500'>
                 1950年の
@@ -320,14 +320,14 @@ const App = () => (
               <Link href='/1980/jpy/10000' className='link hover:text-zinc-500'>
                 1980年の
                 <wbr />
-                10,000円
+                1万円
               </Link>
             </li>
             <li>
               <Link href='/2010/eur/50000' className='link hover:text-zinc-500'>
                 2010年の
                 <wbr />
-                50,000ユーロ
+                5万ユーロ
               </Link>
             </li>
           </ul>
