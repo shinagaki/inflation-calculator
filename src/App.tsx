@@ -354,10 +354,50 @@ const App = () => (
         </Route>
       </Switch>
     </main>
-    <footer>
-      <div className='p-4 text-xs sm:text-sm text-right text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0'>
+    <footer className='w-full flex items-center justify-between p-2 sm:p-4 text-xs sm:text-sm text-right text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0'>
+      <div className='flex text-[0.75em]'>
+        <p>ソース：</p>
+        <ul className='flex space-x-2 whitespace-nowrap'>
+          <li>
+            <Link
+              href='https://www.stat.go.jp/data/cpi/'
+              className='link underline hover:text-zinc-400'
+            >
+              🇯🇵 総務省
+            </Link>
+          </li>
+          <li>
+            <Link
+              href='https://www.bls.gov/cpi/'
+              className='link underline hover:text-zinc-400'
+            >
+              🇺🇸 DOL
+            </Link>
+          </li>
+          <li>
+            <Link
+              href='https://www.ons.gov.uk/economy/inflationandpriceindices/'
+              className='link underline hover:text-zinc-400'
+            >
+              🇬🇧 ONS
+            </Link>
+          </li>
+          <li>
+            <Link
+              href='https://ec.europa.eu/eurostat'
+              className='link underline hover:text-zinc-400'
+            >
+              🇪🇺 eurostat
+            </Link>
+          </li>
+        </ul>
+      </div>
+      <div className='text-right'>
         ©{yearNow}{' '}
-        <Link href='https://creco.net/' className='link underline'>
+        <Link
+          href='https://creco.net/'
+          className='link underline hover:text-zinc-400'
+        >
           creco
         </Link>
       </div>
