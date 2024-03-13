@@ -47,7 +47,7 @@ const urlDomain = 'imaikura.creco.net'
 const TopPage = () => {
   const [match, params] = useRoute('/:year/:currency/:amount')
   const [location, setLocation] = useLocation()
-  const [currencyRates, setCurrencyRates] = useState<ExchangeRatesAPI>()
+  const [currencyRates, setCurrencyRates] = useState<ExchangeRatesAPI>({})
   interface ExchangeRatesAPI {
     [key: string]: ExchangeRate
   }
