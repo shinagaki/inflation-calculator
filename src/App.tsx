@@ -386,10 +386,10 @@ const App = () => (
         </Route>
       </Switch>
     </main>
-    <footer className='w-full flex items-center justify-between p-2 sm:p-4 text-xs sm:text-sm text-right text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0'>
-      <div className='flex text-[0.75em] truncate'>
+    <footer className='w-full flex items-center justify-between p-2 sm:p-4 text-xs sm:text-sm text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0'>
+      <div className='flex text-[0.75em] mr-2 overflow-x-auto text-nowrap'>
         <p>ソース：</p>
-        <ul className='flex space-x-2 whitespace-nowrap'>
+        <ul className='flex space-x-1 whitespace-nowrap'>
           <li>
             <Link
               href='https://www.stat.go.jp/data/cpi/'
@@ -427,12 +427,12 @@ const App = () => (
               href='https://www.coingecko.com/'
               className='link underline hover:text-zinc-400'
             >
-              CoinGecko
+              💹 CoinGecko
             </Link>
           </li>
         </ul>
       </div>
-      <div className='text-right'>
+      <div className='text-right text-nowrap'>
         ©{yearNow}{' '}
         <Link
           href='https://creco.net/'
