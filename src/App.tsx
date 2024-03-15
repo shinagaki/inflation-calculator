@@ -387,7 +387,7 @@ const App = () => (
       </Switch>
     </main>
     <footer className='w-full flex items-center justify-between p-2 sm:p-4 text-xs sm:text-sm text-right text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0'>
-      <div className='flex text-[0.75em]'>
+      <div className='flex text-[0.75em] truncate'>
         <p>ソース：</p>
         <ul className='flex space-x-2 whitespace-nowrap'>
           <li>
