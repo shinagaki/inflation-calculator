@@ -386,10 +386,10 @@ const App = () => (
         </Route>
       </Switch>
     </main>
-    <footer className='w-full flex items-center justify-between gap-2 p-2 sm:p-4 text-xs sm:text-sm text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0 text-nowrap'>
+    <footer className='w-full flex items-center justify-between gap-2 p-2 sm:p-4 text-xs sm:text-sm text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0 whitespace-nowrap'>
       <div className='flex text-[0.75em] overflow-x-auto'>
         <p>ソース：</p>
-        <ul className='flex space-x-1 whitespace-nowrap'>
+        <ul className='flex space-x-1'>
           <li>
             <Link
               href='https://www.stat.go.jp/data/cpi/'
