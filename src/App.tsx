@@ -14,8 +14,8 @@ import './App.css'
 const currencies = [
   { label: '円', value: 'jpy', emoji: '🇯🇵' },
   { label: 'ドル', value: 'usd', emoji: '🇺🇸' },
-  { label: 'ユーロ', value: 'eur', emoji: '🇪🇺' },
   { label: 'ポンド', value: 'gbp', emoji: '🇬🇧' },
+  { label: 'ユーロ', value: 'eur', emoji: '🇪🇺' },
   // { label: '人民元', value: 'cny', emoji: '🇨🇳' },
   // { label: '豪ドル', value: 'aud', emoji: '🇦🇺' },
   // { label: 'カナダドル', value: 'cad', emoji: '🇨🇦' },
@@ -44,10 +44,29 @@ const yearList = Array.from(
 const yearDefault = 1950
 const urlDomain = 'imaikura.creco.net'
 
+const fetchExchangeRatesAPI = async () => {
+  const response = await fetch(
+    'https://api.coingecko.com/api/v3/exchange_rates',
+  )
+  const res = await response.json()
+  return res.rates
+}
+
 const TopPage = () => {
   const [match, params] = useRoute('/:year/:currency/:amount')
   const [location, setLocation] = useLocation()
-  const [currencyRates, setCurrencyRates] = useState<ExchangeRatesAPI>({})
+  const [currencyRates, setCurrencyRates] = useState<ExchangeRatesAPI | null>(
+    null,
+  )
+
+  let year = yearDefault.toString()
+  let currency = 'usd'
+  let amount = amountDefault.toString()
+  let result = undefined
+  let resultStatement = ''
+  let shareStatement = ''
+  const amountRef = useRef<HTMLInputElement>(null)
+
   interface ExchangeRatesAPI {
     [key: string]: ExchangeRate
   }
@@ -56,11 +75,7 @@ const TopPage = () => {
   }
 
   useEffect(() => {
-    fetch('https://api.coingecko.com/api/v3/exchange_rates')
-      .then(res => res.json())
-      .then(data => {
-        setCurrencyRates(data.rates)
-      })
+    fetchExchangeRatesAPI().then(res => setCurrencyRates(res))
   }, [])
 
   const validateYear = (year: string) => {
@@ -73,11 +88,10 @@ const TopPage = () => {
     )
   }
   const validateCurrency = (currency: string) => {
-    const currenciesAvailable = ['usd', 'jpy', 'eur', 'gbp']
+    const currenciesAvailable = ['usd', 'jpy', 'gbp', 'eur']
     return currenciesAvailable.includes(currency)
   }
   const validateAmount = (amount: string) => {
-    // const amountNumber = Number(amount)
     // 小数点2桁まで
     const amountNumber = Number(parseFloat(amount).toFixed(2))
     return (
@@ -93,14 +107,30 @@ const TopPage = () => {
     }
     return NaN
   }
+  const handleChangeYear = (yearNew: string) => {
+    if (validateYear(yearNew)) {
+      setLocation(`/${yearNew}/${currency}/${amount}`)
+    }
+  }
+  const handleChangeCurrency = (currencyNew: string) => {
+    if (validateCurrency(currencyNew)) {
+      setLocation(`/${year}/${currencyNew}/${amount}`)
+    }
+  }
+  const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>) => {
+    if (validateAmount(e.target.value)) {
+      setLocation(`/${year}/${currency}/${e.target.value}`)
+    }
+  }
 
-  let year = yearDefault.toString()
-  let currency = 'usd'
-  let amount = amountDefault.toString()
-  let result = undefined
-  let resultStatement = ''
-  let shareStatement = ''
-  const amountRef = useRef<HTMLInputElement>(null)
+  if (!currencyRates) {
+    // Loading中
+    return (
+      <div className='flex justify-center' aria-label='読み込み中'>
+        <div className='animate-spin h-12 w-12 border-4 border-zinc-200/70 rounded-full border-t-transparent' />
+      </div>
+    )
+  }
 
   if (match) {
     if (
@@ -135,22 +165,6 @@ const TopPage = () => {
     amountRef.current.value = new Intl.NumberFormat('ja-JP').format(
       Number(parseFloat(amount).toFixed(2)),
     )
-  }
-
-  const handleChangeYear = (yearNew: string) => {
-    if (validateYear(yearNew)) {
-      setLocation(`/${yearNew}/${currency}/${amount}`)
-    }
-  }
-  const handleChangeCurrency = (currencyNew: string) => {
-    if (validateCurrency(currencyNew)) {
-      setLocation(`/${year}/${currencyNew}/${amount}`)
-    }
-  }
-  const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>) => {
-    if (validateAmount(e.target.value)) {
-      setLocation(`/${year}/${currency}/${e.target.value}`)
-    }
   }
 
   return (
