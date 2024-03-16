@@ -23,11 +23,8 @@ export default {
   plugins: [
     plugin(({ addUtilities }) => {
       addUtilities({
-        '.text-webkit-center': {
-          'text-align': '-webkit-center',
-        },
-        '.text-moz-center': {
-          'text-align': '-moz-center',
+        '.text-center-last': {
+          'text-align-last': 'center',
         },
       })
     }),
