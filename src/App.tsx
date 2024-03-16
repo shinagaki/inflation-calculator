@@ -188,7 +188,7 @@ const TopPage = () => {
                 <select
                   id='year'
                   name='year'
-                  className='w-full rounded-md border-0 py-1.5 pl-4 pr-6 text-center text-xl text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                  className='w-full rounded-md border-0 py-1.5 pl-4 pr-6 text-center [text-align:-webkit-center] [text-align:-moz-center] text-xl text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                   required
                   onChange={e => {
                     handleChangeYear(e.currentTarget.value)

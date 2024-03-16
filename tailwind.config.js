@@ -1,3 +1,5 @@
+import plugin from 'tailwindcss/plugin'
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
@@ -18,5 +20,16 @@ export default {
       ],
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addUtilities }) => {
+      addUtilities({
+        '.text-webkit-center': {
+          'text-align': '-webkit-center',
+        },
+        '.text-moz-center': {
+          'text-align': '-moz-center',
+        },
+      })
+    }),
+  ],
 }
