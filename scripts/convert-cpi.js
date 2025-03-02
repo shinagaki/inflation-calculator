@@ -1,12 +1,16 @@
-const fs = require('fs');
-const path = require('path');
-const csv = require('csv-parse/sync');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { parse } from 'csv-parse/sync';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const inputFile = path.join(__dirname, '../src/data/cpi_all.csv');
 const outputFile = path.join(__dirname, '../src/data/cpi_all.json');
 
 const csvContent = fs.readFileSync(inputFile, 'utf-8');
-const records = csv.parse(csvContent, {
+const records = parse(csvContent, {
   columns: true,
   skip_empty_lines: true
 });

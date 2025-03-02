@@ -51,7 +51,10 @@ export const TopPage = () => {
 
     const cpiLine = (cpiAll as CpiType[]).find(data => data.year === year);
     const cpi = cpiLine ? Number(cpiLine[currency]) || 0 : 0;
-    const cpiNowLine = (cpiAll as CpiType[]).find(data => data.year === YEAR_NOW.toString());
+    let cpiNowLine = (cpiAll as CpiType[]).find(data => data.year === YEAR_NOW.toString());
+    if (!cpiNowLine) {
+      cpiNowLine = (cpiAll as CpiType[]).find(data => data.year === (YEAR_NOW - 1).toString());
+    }
     const cpiNow = cpiNowLine ? Number(cpiNowLine[currency]) || 0 : 0;
     const exchangeRate = currencyRates.jpy.value / currencyRates[currency].value;
 
