@@ -183,7 +183,9 @@ export const TopPage = () => {
       ) : (
         <div className='flex justify-center items-center gap-4'>
           <div className='my-6 text-center text-2xl sm:text-3xl'>
-            {Number.isNaN(result) ? '計算できません' : resultStatement}
+            <span className='text-zinc-900 drop-shadow-[0_0_3px_rgba(255,255,255,0.7)]'>
+              {Number.isNaN(result) ? '計算できません' : resultStatement}
+            </span>
           </div>
           {!Number.isNaN(result) && (
             <div className='flex gap-1'>
@@ -191,12 +193,14 @@ export const TopPage = () => {
                 url={`https://${URL_DOMAIN}${location}`}
                 title={shareStatement}
                 hashtags={['今いくら']}
+                className="transition-opacity hover:opacity-70"
               >
                 <TwitterIcon size={32} round />
               </TwitterShareButton>
               <LineShareButton
                 url={`https://${URL_DOMAIN}${location}`}
                 title={shareStatement}
+                className="transition-opacity hover:opacity-70"
               >
                 <LineIcon size={32} round />
               </LineShareButton>
@@ -204,6 +208,7 @@ export const TopPage = () => {
                 subject={'今いくら'}
                 body={shareStatement}
                 url={`https://${URL_DOMAIN}${location}`}
+                className="transition-opacity hover:opacity-70"
               >
                 <EmailIcon size={32} round />
               </EmailShareButton>
