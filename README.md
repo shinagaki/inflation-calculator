@@ -1,6 +1,7 @@
 # 今いくら（日本円のインフレーション計算機 🇯🇵）
 
 消費者物価指数（CPI）に基づいて、過去の金額を現在の価値に換算するウェブアプリケーションです。
+Cloudflare Pagesで公開しています [今いくら](https://imaikura.creco.net/)
 
 詳しい解説は[ブログ記事](https://creco.net/create_japanese_yen_inflation_calculator/)をご覧ください。
 
@@ -25,7 +26,7 @@
 
 ```bash
 # リポジトリのクローン
-git clone [https://github.com/shinagaki/inflation-calculator]
+git clone https://github.com/shinagaki/inflation-calculator
 cd inflation-calculator
 
 # 依存関係のインストール
