@@ -3,6 +3,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { InflationForm } from './InflationForm';
 import { InflationResult } from './InflationResult';
 import { useInflationCalculation } from '../hooks/useInflationCalculation';
+import { useExchangeRates } from '../hooks/useExchangeRates';
 import { validateYear, validateCurrency, validateAmount } from '../utils/validators';
 import { YEAR_DEFAULT, AMOUNT_DEFAULT } from '../constants';
 
@@ -33,6 +34,8 @@ export const TopPage = () => {
     currency,
     amount,
   });
+
+  const { retry, isUsingFallback } = useExchangeRates();
 
   const handleChangeYear = (yearNew: string) => {
     setLocation(`/${yearNew}/${currency}/${amount}`);
@@ -67,6 +70,8 @@ export const TopPage = () => {
         location={location}
         loading={loading}
         error={error}
+        onRetry={retry}
+        isUsingFallback={isUsingFallback}
       />
     </div>
   );

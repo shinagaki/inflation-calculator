@@ -24,7 +24,12 @@ export const useInflationCalculation = ({
   currency,
   amount,
 }: UseInflationCalculationParams): InflationResult => {
-  const { rates: currencyRates, loading, error: ratesError } = useExchangeRates();
+  const { 
+    rates: currencyRates, 
+    loading, 
+    error: ratesError, 
+    isUsingFallback 
+  } = useExchangeRates();
 
   const calculation = useMemo(() => {
     if (loading || !currencyRates) {
@@ -37,27 +42,92 @@ export const useInflationCalculation = ({
     }
 
     try {
+      // CPIデータの検証
       const cpiLine = (cpiAll as CpiType[]).find(data => data.year === year);
-      const cpi = cpiLine ? Number(cpiLine[currency]) || 0 : 0;
+      if (!cpiLine) {
+        return {
+          result: undefined,
+          resultStatement: '',
+          shareStatement: '',
+          error: `${year}年のCPIデータが見つかりません`,
+        };
+      }
       
+      const cpi = Number(cpiLine[currency]);
+      if (!cpi || cpi <= 0) {
+        return {
+          result: undefined,
+          resultStatement: '',
+          shareStatement: '',
+          error: `${year}年の${currency.toUpperCase()}のCPIデータが無効です`,
+        };
+      }
+      
+      // 現在年のCPIデータ取得
       let cpiNowLine = (cpiAll as CpiType[]).find(data => data.year === YEAR_NOW.toString());
       if (!cpiNowLine) {
         cpiNowLine = (cpiAll as CpiType[]).find(data => data.year === (YEAR_NOW - 1).toString());
       }
-      const cpiNow = cpiNowLine ? Number(cpiNowLine[currency]) || 0 : 0;
+      
+      if (!cpiNowLine) {
+        return {
+          result: undefined,
+          resultStatement: '',
+          shareStatement: '',
+          error: '現在年のCPIデータが見つかりません',
+        };
+      }
+      
+      const cpiNow = Number(cpiNowLine[currency]);
+      if (!cpiNow || cpiNow <= 0) {
+        return {
+          result: undefined,
+          resultStatement: '',
+          shareStatement: '',
+          error: `現在年の${currency.toUpperCase()}のCPIデータが無効です`,
+        };
+      }
+      
+      // 為替レートの検証
+      if (!currencyRates[currency]) {
+        return {
+          result: undefined,
+          resultStatement: '',
+          shareStatement: '',
+          error: `${currency.toUpperCase()}の為替レートが取得できません`,
+        };
+      }
       
       const exchangeRate = currencyRates.jpy.value / currencyRates[currency].value;
+      if (!exchangeRate || exchangeRate <= 0) {
+        return {
+          result: undefined,
+          resultStatement: '',
+          shareStatement: '',
+          error: '為替レートの計算に失敗しました',
+        };
+      }
+      
       const result = calculateInflationAdjustedAmount(Number(amount), cpi, cpiNow, exchangeRate);
       
-      const resultStatement = `${formatCurrency(result)}円`;
+      if (Number.isNaN(result)) {
+        return {
+          result: undefined,
+          resultStatement: '',
+          shareStatement: '',
+          error: '計算結果が無効です。入力値を確認してください',
+        };
+      }
+      
+      const resultStatement = `${formatCurrency(result)}円${isUsingFallback ? '（参考値）' : ''}`;
       const currencyInfo = currencies.find(data => data.value === currency);
-      const shareStatement = `${year}年の${formatCurrency(Number(amount))}${currencyInfo?.label}は${resultStatement}`;
+      const shareStatement = `${year}年の${formatCurrency(Number(amount))}${currencyInfo?.label}は${formatCurrency(result)}円${isUsingFallback ? '（参考値）' : ''}`;
 
       return {
         result,
         resultStatement,
         shareStatement,
-        error: null,
+        error: isUsingFallback ? '為替レートは参考値です' : null,
       };
     } catch (err) {
       return {
