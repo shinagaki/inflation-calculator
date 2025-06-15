@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code settings
+.claude/settings.local.json
+
+# 内部分析文書
+IMPROVEMENT_ANALYSIS.md
