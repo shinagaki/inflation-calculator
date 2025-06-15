@@ -17,6 +17,7 @@ interface InflationResultProps {
   error: string | null;
   onRetry?: () => void;
   isUsingFallback?: boolean;
+  isNetworkError?: boolean;
 }
 
 export const InflationResult = ({
@@ -28,6 +29,7 @@ export const InflationResult = ({
   error,
   onRetry,
   isUsingFallback = false,
+  isNetworkError = false,
 }: InflationResultProps) => {
   if (loading) {
     return (
@@ -42,7 +44,7 @@ export const InflationResult = ({
       <div className='my-6 text-center'>
         <div className='mb-4'>
           <p className='text-red-600 mb-2'>⚠️ {error}</p>
-          {onRetry && (
+          {onRetry && isNetworkError && (
             <button
               onClick={onRetry}
               className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
@@ -72,7 +74,7 @@ export const InflationResult = ({
             <span className='text-yellow-800 text-sm'>
               ⚠️ {error || '為替レートは参考値です'}
             </span>
-            {onRetry && (
+            {onRetry && (isNetworkError || isUsingFallback) && (
               <button
                 onClick={onRetry}
                 className='ml-3 px-3 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors'

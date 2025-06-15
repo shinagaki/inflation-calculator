@@ -35,7 +35,7 @@ export const TopPage = () => {
     amount,
   });
 
-  const { retry, isUsingFallback } = useExchangeRates();
+  const { retry, isUsingFallback, error: ratesError } = useExchangeRates();
 
   const handleChangeYear = (yearNew: string) => {
     setLocation(`/${yearNew}/${currency}/${amount}`);
@@ -72,6 +72,7 @@ export const TopPage = () => {
         error={error}
         onRetry={retry}
         isUsingFallback={isUsingFallback}
+        isNetworkError={!!ratesError}
       />
     </div>
   );
