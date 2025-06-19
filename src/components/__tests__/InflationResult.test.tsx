@@ -44,19 +44,27 @@ describe('InflationResult', () => {
   })
 
   describe('エラー状態', () => {
-    it('errorがある時にエラーメッセージが表示される', () => {
+    it('errorがあるが結果もある時は警告として表示される', () => {
       const errorMessage = 'APIエラーが発生しました'
       render(<InflationResult {...defaultProps} error={errorMessage} />)
       
-      expect(screen.getByText(`エラー: ${errorMessage}`)).toBeInTheDocument()
+      expect(screen.getByText(`⚠️ ${errorMessage}`)).toBeInTheDocument()
+      expect(screen.getByText(defaultProps.resultStatement)).toBeInTheDocument()
+    })
+
+    it('errorがあり結果がない時はエラーメッセージのみ表示される', () => {
+      const errorMessage = 'APIエラーが発生しました'
+      render(<InflationResult {...defaultProps} error={errorMessage} result={undefined} />)
+      
+      expect(screen.getByText(`⚠️ ${errorMessage}`)).toBeInTheDocument()
       expect(screen.queryByText(defaultProps.resultStatement)).not.toBeInTheDocument()
     })
 
-    it('エラーメッセージが赤色で表示される', () => {
+    it('エラーメッセージが黄色背景で表示される', () => {
       render(<InflationResult {...defaultProps} error="テストエラー" />)
       
-      const errorElement = screen.getByText('エラー: テストエラー')
-      expect(errorElement).toHaveClass('text-red-600')
+      const errorElement = screen.getByText('⚠️ テストエラー')
+      expect(errorElement).toHaveClass('text-yellow-800')
     })
   })
 
@@ -132,14 +140,14 @@ describe('InflationResult', () => {
       render(<InflationResult {...defaultProps} loading={true} error="エラーメッセージ" />)
       
       expect(screen.getByText('計算中...')).toBeInTheDocument()
-      expect(screen.queryByText('エラー: エラーメッセージ')).not.toBeInTheDocument()
+      expect(screen.queryByText('⚠️ エラーメッセージ')).not.toBeInTheDocument()
     })
 
-    it('loading=falseかつerrorがある場合、エラーが表示される', () => {
+    it('loading=falseかつerrorがある場合、警告が表示される', () => {
       render(<InflationResult {...defaultProps} loading={false} error="エラーメッセージ" />)
       
-      expect(screen.getByText('エラー: エラーメッセージ')).toBeInTheDocument()
-      expect(screen.queryByText(defaultProps.resultStatement)).not.toBeInTheDocument()
+      expect(screen.getByText('⚠️ エラーメッセージ')).toBeInTheDocument()
+      expect(screen.getByText(defaultProps.resultStatement)).toBeInTheDocument()
     })
 
     it('loading=falseかつerror=nullかつresult=undefinedの場合、初期メッセージが表示される', () => {

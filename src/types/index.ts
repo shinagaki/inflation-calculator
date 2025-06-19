@@ -3,7 +3,10 @@ export interface ExchangeRatesAPI {
 }
 
 export interface ExchangeRate {
+  name: string;
+  unit: string;
   value: number;
+  type: string;
 }
 
 export interface Currency {

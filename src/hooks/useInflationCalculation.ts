@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 import { useExchangeRates } from './useExchangeRates';
+import { useCpiData } from './useCpiData';
 import { calculateInflationAdjustedAmount, formatCurrency } from '../utils/calculations';
 import { currencies, YEAR_NOW } from '../constants';
-import { CpiType } from '../types';
-import cpiAll from '../data/cpi_all.json';
 
 interface UseInflationCalculationParams {
   year: string;
@@ -26,24 +25,32 @@ export const useInflationCalculation = ({
 }: UseInflationCalculationParams): InflationResult => {
   const { 
     rates: currencyRates, 
-    loading, 
+    loading: ratesLoading, 
     error: ratesError, 
     isUsingFallback 
   } = useExchangeRates();
+  
+  const { 
+    cpiData, 
+    loading: cpiLoading, 
+    error: cpiError 
+  } = useCpiData();
+
+  const loading = ratesLoading || cpiLoading;
 
   const calculation = useMemo(() => {
-    if (loading || !currencyRates) {
+    if (loading || !currencyRates || !cpiData) {
       return {
         result: undefined,
         resultStatement: '',
         shareStatement: '',
-        error: ratesError?.message || null,
+        error: ratesError?.message || cpiError?.message || null,
       };
     }
 
     try {
       // CPIデータの検証
-      const cpiLine = (cpiAll as CpiType[]).find(data => data.year === year);
+      const cpiLine = cpiData.find(data => data.year === year);
       if (!cpiLine) {
         return {
           result: undefined,
@@ -64,9 +71,9 @@ export const useInflationCalculation = ({
       }
       
       // 現在年のCPIデータ取得
-      let cpiNowLine = (cpiAll as CpiType[]).find(data => data.year === YEAR_NOW.toString());
+      let cpiNowLine = cpiData.find(data => data.year === YEAR_NOW.toString());
       if (!cpiNowLine) {
-        cpiNowLine = (cpiAll as CpiType[]).find(data => data.year === (YEAR_NOW - 1).toString());
+        cpiNowLine = cpiData.find(data => data.year === (YEAR_NOW - 1).toString());
       }
       
       if (!cpiNowLine) {
@@ -137,7 +144,7 @@ export const useInflationCalculation = ({
         error: err instanceof Error ? err.message : '計算エラーが発生しました',
       };
     }
-  }, [year, currency, amount, currencyRates, loading, ratesError]);
+  }, [year, currency, amount, currencyRates, cpiData, loading, ratesError, cpiError, isUsingFallback]);
 
   return {
     ...calculation,

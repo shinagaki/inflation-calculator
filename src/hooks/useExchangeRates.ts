@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ExchangeRatesAPI } from '../types';
 import { fetchExchangeRates, ApiError } from '../services/api';
+import { cacheManager } from '../utils/cache';
 
 interface UseExchangeRatesReturn {
   rates: ExchangeRatesAPI | null;
@@ -18,14 +19,28 @@ export const useExchangeRates = (): UseExchangeRatesReturn => {
   const [isUsingFallback, setIsUsingFallback] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
-  const loadRates = async () => {
+  const loadRates = async (forceRefresh: boolean = false) => {
     setLoading(true);
     setError(null);
+    
+    // キャッシュから取得を試行（強制更新でない場合）
+    if (!forceRefresh) {
+      const cachedRates = cacheManager.getExchangeRates();
+      if (cachedRates) {
+        setRates(cachedRates);
+        setIsUsingFallback(false);
+        setLoading(false);
+        return;
+      }
+    }
     
     try {
       const data = await fetchExchangeRates();
       setRates(data);
       setIsUsingFallback(false);
+      
+      // キャッシュに保存（APIから正常に取得できた場合のみ）
+      cacheManager.setExchangeRates(data);
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.isNetworkError) {
@@ -56,7 +71,7 @@ export const useExchangeRates = (): UseExchangeRatesReturn => {
 
   const retry = () => {
     setRetryCount(prev => prev + 1);
-    loadRates();
+    loadRates(true); // 強制更新でリトライ
   };
 
   useEffect(() => {

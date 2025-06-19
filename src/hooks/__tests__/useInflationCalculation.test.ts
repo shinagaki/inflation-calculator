@@ -2,20 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useInflationCalculation } from '../useInflationCalculation'
 import * as useExchangeRatesHook from '../useExchangeRates'
+import * as useCpiDataHook from '../useCpiData'
 
 // useExchangeRatesフックをモック
 vi.mock('../useExchangeRates')
 const mockUseExchangeRates = vi.mocked(useExchangeRatesHook.useExchangeRates)
 
-// CPIデータをモック
-vi.mock('../../data/cpi_all.json', () => ({
-  default: [
-    { year: '1980', jpy: 100, usd: 82.4, gbp: 78.9, eur: 85.2 },
-    { year: '2000', jpy: 110, usd: 172.2, gbp: 156.1, eur: 158.8 },
-    { year: '2023', jpy: 140, usd: 307.3, gbp: 295.5, eur: 285.1 },
-    { year: '2024', jpy: 142, usd: 310.3, gbp: 298.2, eur: 287.8 },
-  ]
-}))
+// useCpiDataフックをモック
+vi.mock('../useCpiData')
+const mockUseCpiData = vi.mocked(useCpiDataHook.useCpiData)
+
+const mockCpiData = [
+  { year: '1980', jpy: '100', usd: '82.4', gbp: '78.9', eur: '85.2' },
+  { year: '2000', jpy: '110', usd: '172.2', gbp: '156.1', eur: '158.8' },
+  { year: '2023', jpy: '140', usd: '307.3', gbp: '295.5', eur: '285.1' },
+  { year: '2024', jpy: '142', usd: '310.3', gbp: '298.2', eur: '287.8' },
+]
 
 const mockExchangeRates = {
   jpy: { name: 'Japanese Yen', unit: 'JPY', value: 1, type: 'fiat' },
@@ -30,6 +32,14 @@ describe('useInflationCalculation', () => {
     // デフォルトで成功状態をセット
     mockUseExchangeRates.mockReturnValue({
       rates: mockExchangeRates,
+      loading: false,
+      error: null,
+      isUsingFallback: false,
+      retryCount: 0,
+      retry: vi.fn(),
+    })
+    mockUseCpiData.mockReturnValue({
+      cpiData: mockCpiData,
       loading: false,
       error: null,
     })
@@ -89,6 +99,14 @@ describe('useInflationCalculation', () => {
         rates: null,
         loading: true,
         error: null,
+        isUsingFallback: false,
+        retryCount: 0,
+        retry: vi.fn(),
+      })
+      mockUseCpiData.mockReturnValue({
+        cpiData: mockCpiData,
+        loading: false,
+        error: null,
       })
 
       const { result } = renderHook(() =>
@@ -113,6 +131,14 @@ describe('useInflationCalculation', () => {
         rates: null,
         loading: false,
         error: new Error(errorMessage),
+        isUsingFallback: false,
+        retryCount: 0,
+        retry: vi.fn(),
+      })
+      mockUseCpiData.mockReturnValue({
+        cpiData: mockCpiData,
+        loading: false,
+        error: null,
       })
 
       const { result } = renderHook(() =>
@@ -129,6 +155,11 @@ describe('useInflationCalculation', () => {
     })
 
     it('存在しない年のCPIデータでも適切に処理する', () => {
+      mockUseCpiData.mockReturnValue({
+        cpiData: mockCpiData,
+        loading: false,
+        error: null,
+      })
       const { result } = renderHook(() =>
         useInflationCalculation({
           year: '1800', // 存在しない年

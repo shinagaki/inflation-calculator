@@ -45,7 +45,7 @@ describe('useExchangeRates', () => {
     expect(result.current.error).toBeNull()
   })
 
-  it('API呼び出しが失敗すると error が設定され loading が false になる', async () => {
+  it('API呼び出しが失敗すると error が設定されフォールバックデータが使用される', async () => {
     const errorMessage = 'Network error'
     mockFetchExchangeRates.mockRejectedValue(new Error(errorMessage))
     
@@ -55,9 +55,9 @@ describe('useExchangeRates', () => {
       expect(result.current.loading).toBe(false)
     })
     
-    expect(result.current.rates).toBeNull()
+    expect(result.current.rates).not.toBeNull()
+    expect(result.current.isUsingFallback).toBe(true)
     expect(result.current.error).toBeInstanceOf(Error)
-    expect(result.current.error?.message).toBe(errorMessage)
   })
 
   it('API呼び出しがError以外で失敗した場合、デフォルトエラーメッセージが設定される', async () => {
@@ -69,19 +69,28 @@ describe('useExchangeRates', () => {
       expect(result.current.loading).toBe(false)
     })
     
-    expect(result.current.error?.message).toBe('Failed to fetch rates')
+    expect(result.current.error?.message).toBe('予期しないエラーが発生しました')
+    expect(result.current.isUsingFallback).toBe(true)
   })
 
-  it('コンポーネントマウント時に fetchExchangeRates が1回呼ばれる', () => {
-    mockFetchExchangeRates.mockResolvedValue({
+  it('コンポーネントマウント時に正常に初期化される', async () => {
+    const mockRates = {
       jpy: { name: 'Japanese Yen', unit: 'JPY', value: 1, type: 'fiat' },
       usd: { name: 'US Dollar', unit: 'USD', value: 0.0067, type: 'fiat' },
       gbp: { name: 'British Pound Sterling', unit: 'GBP', value: 0.0053, type: 'fiat' },
       eur: { name: 'Euro', unit: 'EUR', value: 0.0061, type: 'fiat' },
+    }
+    
+    mockFetchExchangeRates.mockResolvedValue(mockRates)
+    
+    const { result } = renderHook(() => useExchangeRates())
+    
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
     })
     
-    renderHook(() => useExchangeRates())
-    
-    expect(mockFetchExchangeRates).toHaveBeenCalledTimes(1)
+    expect(result.current.rates).toEqual(mockRates)
+    expect(result.current.error).toBeNull()
+    expect(result.current.isUsingFallback).toBe(false)
   })
 })

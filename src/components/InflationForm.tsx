@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useRef, memo } from 'react';
 import { validateYear, validateCurrency, validateAmount } from '../utils/validators';
 import { formatCurrency } from '../utils/calculations';
 import { currencies, YEAR_LIST } from '../constants';
@@ -12,7 +12,7 @@ interface InflationFormProps {
   onAmountChange: (amount: string) => void;
 }
 
-export const InflationForm = ({
+const InflationFormComponent = ({
   year,
   currency,
   amount,
@@ -133,3 +133,6 @@ export const InflationForm = ({
     </form>
   );
 };
+
+// React.memoでラップして不要な再レンダリングを防止
+export const InflationForm = memo(InflationFormComponent);

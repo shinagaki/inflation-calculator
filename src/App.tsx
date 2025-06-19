@@ -1,9 +1,25 @@
 import { Link, Route, Switch } from 'wouter'
 import { TopPage } from './components/TopPage'
 import { YEAR_NOW } from './constants'
+import { useState, useEffect } from 'react'
 
-const App = () => (
-  <div className='min-h-dvh w-full flex flex-col text-zinc-900 bg-[url("/img/background.webp")] bg-cover'>
+const App = () => {
+  const [backgroundLoaded, setBackgroundLoaded] = useState(false)
+
+  useEffect(() => {
+    const img = new Image()
+    img.onload = () => setBackgroundLoaded(true)
+    img.src = '/img/background.webp'
+  }, [])
+
+  return (
+    <div 
+      className={`min-h-dvh w-full flex flex-col text-zinc-900 bg-cover transition-opacity duration-300 ${
+        backgroundLoaded 
+          ? 'bg-[url("/img/background.webp")] opacity-100' 
+          : 'bg-gradient-to-br from-slate-100 to-slate-200 opacity-90'
+      }`}
+    >
     <header className='flex items-center justify-center bg-gradient-to-b from-white/95 via-white/70 via-80% to-white/0 pb-5 sm:pb-10'>
       <div className='flex flex-col items-center justify-center py-0 text-center sm:py-10'>
         <h1 className='my-2 sm:my-4 font-bold text-4xl sm:text-6xl tracking-tight bg-gradient-to-b from-zinc-300 via-zinc-500 via-20% to-zinc-700 bg-clip-text text-transparent sm:first-letter:text-7xl first-letter:text-5xl first-letter:pr-2'>
@@ -106,7 +122,8 @@ const App = () => (
         </Link>
       </div>
     </footer>
-  </div>
-)
+    </div>
+  )
+}
 
 export default App

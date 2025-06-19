@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import {
   EmailIcon,
   EmailShareButton,
@@ -20,7 +21,7 @@ interface InflationResultProps {
   isNetworkError?: boolean;
 }
 
-export const InflationResult = ({
+const InflationResultComponent = ({
   result,
   resultStatement,
   shareStatement,
@@ -124,3 +125,6 @@ export const InflationResult = ({
     </div>
   );
 };
+
+// React.memoでラップして不要な再レンダリングを防止
+export const InflationResult = memo(InflationResultComponent);
