@@ -118,7 +118,7 @@ export const useSEO = (data: SEOData = {}) => {
     updateMetaTag('twitter:title', tags.twitterTitle, false)
     updateMetaTag('twitter:description', tags.twitterDescription, false)
     updateMetaTag('twitter:image', tags.ogImage, false)
-    updateMetaTag('twitter:site', '@imaikura', false)
+    updateMetaTag('twitter:site', '@creco', false)
 
     // Canonical URL
     let canonical = document.querySelector(
