@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { YEAR_NOW, currencies } from '../constants'
+import { YEAR_NOW } from '../constants'
 import {
   calculateInflationAdjustedAmount,
   formatCurrency,
