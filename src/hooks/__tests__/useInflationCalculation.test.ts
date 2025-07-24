@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
-import { useInflationCalculation } from '../useInflationCalculation'
-import * as useExchangeRatesHook from '../useExchangeRates'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as useCpiDataHook from '../useCpiData'
+import * as useExchangeRatesHook from '../useExchangeRates'
+import { useInflationCalculation } from '../useInflationCalculation'
 
 // useExchangeRatesフックをモック
 vi.mock('../useExchangeRates')
@@ -22,7 +22,12 @@ const mockCpiData = [
 const mockExchangeRates = {
   jpy: { name: 'Japanese Yen', unit: 'JPY', value: 1, type: 'fiat' },
   usd: { name: 'US Dollar', unit: 'USD', value: 0.0067, type: 'fiat' },
-  gbp: { name: 'British Pound Sterling', unit: 'GBP', value: 0.0053, type: 'fiat' },
+  gbp: {
+    name: 'British Pound Sterling',
+    unit: 'GBP',
+    value: 0.0053,
+    type: 'fiat',
+  },
   eur: { name: 'Euro', unit: 'EUR', value: 0.0061, type: 'fiat' },
 }
 
@@ -52,7 +57,7 @@ describe('useInflationCalculation', () => {
           year: '1980',
           currency: 'usd',
           amount: '100',
-        })
+        }),
       )
 
       expect(result.current.loading).toBe(false)
@@ -70,7 +75,7 @@ describe('useInflationCalculation', () => {
           year: '2000',
           currency: 'usd',
           amount: '500',
-        })
+        }),
       )
 
       expect(result.current.loading).toBe(false)
@@ -84,7 +89,7 @@ describe('useInflationCalculation', () => {
           year: '2000',
           currency: 'jpy',
           amount: '10000',
-        })
+        }),
       )
 
       expect(result.current.loading).toBe(false)
@@ -114,7 +119,7 @@ describe('useInflationCalculation', () => {
           year: '1980',
           currency: 'usd',
           amount: '100',
-        })
+        }),
       )
 
       expect(result.current.loading).toBe(true)
@@ -146,7 +151,7 @@ describe('useInflationCalculation', () => {
           year: '1980',
           currency: 'usd',
           amount: '100',
-        })
+        }),
       )
 
       expect(result.current.loading).toBe(false)
@@ -165,11 +170,12 @@ describe('useInflationCalculation', () => {
           year: '1800', // 存在しない年
           currency: 'usd',
           amount: '100',
-        })
+        }),
       )
 
       expect(result.current.loading).toBe(false)
-      expect(result.current.result).toBeNaN()
+      expect(result.current.result).toBeUndefined()
+      expect(result.current.error).toContain('CPIデータが見つかりません')
     })
 
     it('存在しない通貨でも適切に処理する', () => {
@@ -178,7 +184,7 @@ describe('useInflationCalculation', () => {
           year: '1980',
           currency: 'cad', // 存在しない通貨
           amount: '100',
-        })
+        }),
       )
 
       expect(result.current.loading).toBe(false)
@@ -197,7 +203,7 @@ describe('useInflationCalculation', () => {
           }),
         {
           initialProps: { year: '1980' },
-        }
+        },
       )
 
       const firstResult = result.current.result
@@ -217,7 +223,7 @@ describe('useInflationCalculation', () => {
           }),
         {
           initialProps: { currency: 'usd' },
-        }
+        },
       )
 
       const firstResult = result.current.result
@@ -237,7 +243,7 @@ describe('useInflationCalculation', () => {
           }),
         {
           initialProps: { amount: '100' },
-        }
+        },
       )
 
       const firstResult = result.current.result
@@ -255,7 +261,7 @@ describe('useInflationCalculation', () => {
           year: '1980',
           currency: 'usd',
           amount: '100',
-        })
+        }),
       )
 
       expect(result.current.resultStatement).toMatch(/^\d{1,3}(,\d{3})*円$/)
@@ -267,10 +273,14 @@ describe('useInflationCalculation', () => {
           year: '1980',
           currency: 'usd',
           amount: '100',
-        })
+        }),
       )
 
-      expect(result.current.shareStatement).toMatch(/^1980年の100ドルは\d{1,3}(,\d{3})*円$/)
+      // バイラルメッセージ形式に変更されたため、基本的な情報が含まれているかをチェック
+      expect(result.current.shareStatement).toContain('1980年')
+      expect(result.current.shareStatement).toContain('100ドル')
+      expect(result.current.shareStatement).toContain('円')
+      expect(result.current.shareStatement).toContain('#今いくら')
     })
 
     it('GBPの場合、shareStatementにポンドが含まれる', () => {
@@ -279,7 +289,7 @@ describe('useInflationCalculation', () => {
           year: '1980',
           currency: 'gbp',
           amount: '50',
-        })
+        }),
       )
 
       expect(result.current.shareStatement).toContain('ポンド')

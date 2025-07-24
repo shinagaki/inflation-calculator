@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo } from 'react'
 import {
   EmailIcon,
   EmailShareButton,
@@ -6,19 +6,19 @@ import {
   LineShareButton,
   TwitterIcon,
   TwitterShareButton,
-} from 'react-share';
-import { URL_DOMAIN } from '../constants';
+} from 'react-share'
+import { URL_DOMAIN } from '../constants'
 
 interface InflationResultProps {
-  result?: number;
-  resultStatement: string;
-  shareStatement: string;
-  location: string;
-  loading: boolean;
-  error: string | null;
-  onRetry?: () => void;
-  isUsingFallback?: boolean;
-  isNetworkError?: boolean;
+  result?: number
+  resultStatement: string
+  shareStatement: string
+  location: string
+  loading: boolean
+  error: string | null
+  onRetry?: () => void
+  isUsingFallback?: boolean
+  isNetworkError?: boolean
 }
 
 const InflationResultComponent = ({
@@ -37,7 +37,7 @@ const InflationResultComponent = ({
       <div className='my-6 text-center'>
         <p>計算中...</p>
       </div>
-    );
+    )
   }
 
   if (error && !result) {
@@ -55,7 +55,7 @@ const InflationResultComponent = ({
           )}
         </div>
       </div>
-    );
+    )
   }
 
   if (typeof result === 'undefined') {
@@ -63,7 +63,7 @@ const InflationResultComponent = ({
       <div className='my-6 text-center'>
         <p>西暦を選択し、金額に数値を入れて、通貨を選択します</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -86,7 +86,7 @@ const InflationResultComponent = ({
           </div>
         </div>
       )}
-      
+
       {/* 結果表示 */}
       <div className='flex justify-center items-center gap-4'>
         <div className='text-center text-2xl sm:text-3xl'>
@@ -100,14 +100,14 @@ const InflationResultComponent = ({
               url={`https://${URL_DOMAIN}${location}`}
               title={shareStatement}
               hashtags={['今いくら']}
-              className="transition-opacity hover:opacity-70"
+              className='transition-opacity hover:opacity-70'
             >
               <TwitterIcon size={32} round />
             </TwitterShareButton>
             <LineShareButton
               url={`https://${URL_DOMAIN}${location}`}
               title={shareStatement}
-              className="transition-opacity hover:opacity-70"
+              className='transition-opacity hover:opacity-70'
             >
               <LineIcon size={32} round />
             </LineShareButton>
@@ -115,7 +115,7 @@ const InflationResultComponent = ({
               subject={'今いくら'}
               body={shareStatement}
               url={`https://${URL_DOMAIN}${location}`}
-              className="transition-opacity hover:opacity-70"
+              className='transition-opacity hover:opacity-70'
             >
               <EmailIcon size={32} round />
             </EmailShareButton>
@@ -123,8 +123,8 @@ const InflationResultComponent = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 // React.memoでラップして不要な再レンダリングを防止
-export const InflationResult = memo(InflationResultComponent);
+export const InflationResult = memo(InflationResultComponent)
