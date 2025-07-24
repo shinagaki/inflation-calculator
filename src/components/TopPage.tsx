@@ -1,19 +1,24 @@
-import { useLocation, useRoute } from 'wouter';
-import { LoadingSpinner } from './LoadingSpinner';
-import { InflationForm } from './InflationForm';
-import { InflationResult } from './InflationResult';
-import { useInflationCalculation } from '../hooks/useInflationCalculation';
-import { useExchangeRates } from '../hooks/useExchangeRates';
-import { validateYear, validateCurrency, validateAmount } from '../utils/validators';
-import { YEAR_DEFAULT, AMOUNT_DEFAULT } from '../constants';
+import { useLocation, useRoute } from 'wouter'
+import { AMOUNT_DEFAULT, YEAR_DEFAULT } from '../constants'
+import { useExchangeRates } from '../hooks/useExchangeRates'
+import { useInflationCalculation } from '../hooks/useInflationCalculation'
+import { useSEO } from '../hooks/useSEO'
+import {
+  validateAmount,
+  validateCurrency,
+  validateYear,
+} from '../utils/validators'
+import { InflationForm } from './InflationForm'
+import { InflationResult } from './InflationResult'
+import { LoadingSpinner } from './LoadingSpinner'
 
 export const TopPage = () => {
-  const [match, params] = useRoute('/:year/:currency/:amount');
-  const [location, setLocation] = useLocation();
+  const [match, params] = useRoute('/:year/:currency/:amount')
+  const [location, setLocation] = useLocation()
 
-  let year = YEAR_DEFAULT.toString();
-  let currency = 'usd';
-  let amount = AMOUNT_DEFAULT.toString();
+  let year = YEAR_DEFAULT.toString()
+  let currency = 'usd'
+  let amount = AMOUNT_DEFAULT.toString()
 
   if (match) {
     if (
@@ -21,33 +26,43 @@ export const TopPage = () => {
       !validateCurrency(params.currency) ||
       !validateAmount(params.amount)
     ) {
-      setLocation('/');
-      return <LoadingSpinner />;
+      setLocation('/')
+      return <LoadingSpinner />
     }
-    year = params.year;
-    currency = params.currency;
-    amount = params.amount;
+    year = params.year
+    currency = params.currency
+    amount = params.amount
   }
 
-  const { result, resultStatement, shareStatement, loading, error } = useInflationCalculation({
+  const { result, resultStatement, shareStatement, loading, error } =
+    useInflationCalculation({
+      year,
+      currency,
+      amount,
+    })
+
+  const { retry, isUsingFallback, error: ratesError } = useExchangeRates()
+
+  // SEO optimization
+  useSEO({
     year,
     currency,
     amount,
-  });
-
-  const { retry, isUsingFallback, error: ratesError } = useExchangeRates();
+    result,
+    location,
+  })
 
   const handleChangeYear = (yearNew: string) => {
-    setLocation(`/${yearNew}/${currency}/${amount}`);
-  };
+    setLocation(`/${yearNew}/${currency}/${amount}`)
+  }
 
   const handleChangeCurrency = (currencyNew: string) => {
-    setLocation(`/${year}/${currencyNew}/${amount}`);
-  };
+    setLocation(`/${year}/${currencyNew}/${amount}`)
+  }
 
   const handleChangeAmount = (amountNew: string) => {
-    setLocation(`/${year}/${currency}/${amountNew}`);
-  };
+    setLocation(`/${year}/${currency}/${amountNew}`)
+  }
 
   return (
     <div className='bg-white/50 hover:bg-white/60 backdrop-blur-lg border border-white/25 shadow-lg rounded-lg px-8 py-6 max-w-xl'>
@@ -75,5 +90,5 @@ export const TopPage = () => {
         isNetworkError={!!ratesError}
       />
     </div>
-  );
-}; 
+  )
+}
