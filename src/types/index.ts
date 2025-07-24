@@ -1,18 +1,18 @@
 export interface ExchangeRatesAPI {
-  [key: string]: ExchangeRate;
+  [key: string]: ExchangeRate
 }
 
 export interface ExchangeRate {
-  name: string;
-  unit: string;
-  value: number;
-  type: string;
+  name: string
+  unit: string
+  value: number
+  type: string
 }
 
 export interface Currency {
-  label: string;
-  value: string;
-  emoji: string;
+  label: string
+  value: string
+  emoji: string
 }
 
-export type CpiType = Record<string, string>; 
+export type CpiType = Record<string, string>

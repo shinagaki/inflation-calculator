@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { validateYear, validateCurrency, validateAmount } from '../validators'
+import { describe, expect, it } from 'vitest'
+import { validateAmount, validateCurrency, validateYear } from '../validators'
 
 describe('validateYear', () => {
   const currentYear = new Date().getFullYear()

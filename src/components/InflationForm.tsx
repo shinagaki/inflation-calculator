@@ -1,15 +1,19 @@
-import { ChangeEvent, useRef, memo } from 'react';
-import { validateYear, validateCurrency, validateAmount } from '../utils/validators';
-import { formatCurrency } from '../utils/calculations';
-import { currencies, YEAR_LIST } from '../constants';
+import { ChangeEvent, memo, useRef } from 'react'
+import { YEAR_LIST, currencies } from '../constants'
+import { formatCurrency } from '../utils/calculations'
+import {
+  validateAmount,
+  validateCurrency,
+  validateYear,
+} from '../utils/validators'
 
 interface InflationFormProps {
-  year: string;
-  currency: string;
-  amount: string;
-  onYearChange: (year: string) => void;
-  onCurrencyChange: (currency: string) => void;
-  onAmountChange: (amount: string) => void;
+  year: string
+  currency: string
+  amount: string
+  onYearChange: (year: string) => void
+  onCurrencyChange: (currency: string) => void
+  onAmountChange: (amount: string) => void
 }
 
 const InflationFormComponent = ({
@@ -20,43 +24,53 @@ const InflationFormComponent = ({
   onCurrencyChange,
   onAmountChange,
 }: InflationFormProps) => {
-  const amountRef = useRef<HTMLInputElement>(null);
+  const amountRef = useRef<HTMLInputElement>(null)
 
   const handleChangeYear = (yearNew: string) => {
     if (validateYear(yearNew)) {
-      onYearChange(yearNew);
+      onYearChange(yearNew)
     }
-  };
+  }
 
   const handleChangeCurrency = (currencyNew: string) => {
     if (validateCurrency(currencyNew)) {
-      onCurrencyChange(currencyNew);
+      onCurrencyChange(currencyNew)
     }
-  };
+  }
 
   const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>) => {
-    let inputNumber = e.currentTarget.value.replace(/,/g, '');
-    const digit = inputNumber.indexOf('.') >= 0 ? inputNumber.indexOf('.') : inputNumber.length;
-    const decimalDigit = inputNumber.indexOf('.') >= 0 ? inputNumber.length - digit - 1 : 0;
+    const inputNumber = e.currentTarget.value.replace(/,/g, '')
+    const digit =
+      inputNumber.indexOf('.') >= 0
+        ? inputNumber.indexOf('.')
+        : inputNumber.length
+    const decimalDigit =
+      inputNumber.indexOf('.') >= 0 ? inputNumber.length - digit - 1 : 0
 
-    if (inputNumber.indexOf('.') >= 0 && inputNumber.length > 1 && decimalDigit === 0) {
-      return;
+    if (
+      inputNumber.indexOf('.') >= 0 &&
+      inputNumber.length > 1 &&
+      decimalDigit === 0
+    ) {
+      return
     }
 
     if (validateAmount(inputNumber)) {
-      onAmountChange(inputNumber);
+      onAmountChange(inputNumber)
     }
-  };
+  }
 
   if (amountRef.current) {
-    amountRef.current.value = formatCurrency(Number(parseFloat(amount).toFixed(2)));
+    amountRef.current.value = formatCurrency(
+      Number(parseFloat(amount).toFixed(2)),
+    )
   }
 
   return (
     <form
       className='flex flex-col sm:flex-row gap-2'
       onSubmit={e => {
-        e.preventDefault();
+        e.preventDefault()
       }}
     >
       <div>
@@ -131,8 +145,8 @@ const InflationFormComponent = ({
         </div>
       </div>
     </form>
-  );
-};
+  )
+}
 
 // React.memoでラップして不要な再レンダリングを防止
-export const InflationForm = memo(InflationFormComponent);
+export const InflationForm = memo(InflationFormComponent)

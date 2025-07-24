@@ -1,5 +1,8 @@
-import { describe, it, expect } from 'vitest'
-import { calculateInflationAdjustedAmount, formatCurrency } from '../calculations'
+import { describe, expect, it } from 'vitest'
+import {
+  calculateInflationAdjustedAmount,
+  formatCurrency,
+} from '../calculations'
 
 describe('calculateInflationAdjustedAmount', () => {
   it('正常な値で正しく計算される', () => {
