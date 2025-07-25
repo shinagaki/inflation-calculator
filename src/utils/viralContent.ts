@@ -200,7 +200,7 @@ export const generateViralShareMessage = (
   // 複数パターンからランダム選択
   const patterns = [
     // パターン1: 驚き + 比較
-    `${surprise}\n${year}年の${formattedAmount}${currencyLabel}が\n今なら${formattedResult}円！\n${comparison ? `\n= ${comparison}` : ''}\n\n#今いくら #${era.replace(/[^\w]/g, '')}`,
+    `${surprise}\n${year}年の${formattedAmount}${currencyLabel}が\n今なら${formattedResult}円！\n${comparison ? `\n= ${comparison}` : ''}\n\n#今いくら #時代価値`,
     
     // パターン2: 時代感 + 感情
     `【${era}】\n${year}年の${formattedAmount}${currencyLabel}\n↓\n今の価値で${formattedResult}円\n${comparison ? `\n${comparison}` : ''}\n\n親世代の金銭感覚、今と全然違う😭\n#今いくら #昭和価値`,
