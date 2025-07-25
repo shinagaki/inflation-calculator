@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 import { InflationResult } from '../InflationResult'
 
 // react-shareのモック
@@ -108,18 +108,22 @@ describe('InflationResult', () => {
       expect(screen.getByText(defaultProps.resultStatement)).toBeInTheDocument()
     })
 
-    it('SNS共有ボタンが表示される', () => {
+    it('SNS共有ボタンが表示される', async () => {
       render(<InflationResult {...defaultProps} />)
 
-      expect(screen.getByTestId('twitter-share')).toBeInTheDocument()
+      // Suspenseによる遅延読み込みを待つ
+      await waitFor(() => {
+        expect(screen.getByTestId('twitter-share')).toBeInTheDocument()
+      })
       expect(screen.getByTestId('line-share')).toBeInTheDocument()
       expect(screen.getByTestId('email-share')).toBeInTheDocument()
     })
 
-    it('SNS共有ボタンに正しいpropsが渡される', () => {
+    it('SNS共有ボタンに正しいpropsが渡される', async () => {
       render(<InflationResult {...defaultProps} />)
 
-      const twitterButton = screen.getByTestId('twitter-share')
+      // Suspenseによる遅延読み込みを待つ
+      const twitterButton = await screen.findByTestId('twitter-share')
       const lineButton = screen.getByTestId('line-share')
       const emailButton = screen.getByTestId('email-share')
 
@@ -148,10 +152,13 @@ describe('InflationResult', () => {
       )
     })
 
-    it('各SNSアイコンが表示される', () => {
+    it('各SNSアイコンが表示される', async () => {
       render(<InflationResult {...defaultProps} />)
 
-      expect(screen.getByTestId('twitter-icon')).toBeInTheDocument()
+      // Suspenseによる遅延読み込みを待つ
+      await waitFor(() => {
+        expect(screen.getByTestId('twitter-icon')).toBeInTheDocument()
+      })
       expect(screen.getByTestId('line-icon')).toBeInTheDocument()
       expect(screen.getByTestId('email-icon')).toBeInTheDocument()
     })
@@ -236,7 +243,7 @@ describe('InflationResult', () => {
       const containerElement = screen
         .getByText(defaultProps.resultStatement)
         .closest('div')
-      expect(containerElement).toHaveClass('text-2xl', 'sm:text-3xl')
+      expect(containerElement).toHaveClass('text-xl', 'sm:text-2xl', 'lg:text-3xl')
     })
   })
 })

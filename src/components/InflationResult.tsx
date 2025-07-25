@@ -1,13 +1,7 @@
-import { memo } from 'react'
-import {
-  EmailIcon,
-  EmailShareButton,
-  LineIcon,
-  LineShareButton,
-  TwitterIcon,
-  TwitterShareButton,
-} from 'react-share'
-import { URL_DOMAIN } from '../constants'
+import { memo, lazy, Suspense } from 'react'
+
+// シェア機能の遅延読み込み
+const ShareButtons = lazy(() => import('./ShareButtons'))
 
 interface InflationResultProps {
   result?: number
@@ -34,43 +28,45 @@ const InflationResultComponent = ({
 }: InflationResultProps) => {
   if (loading) {
     return (
-      <div className='my-6 text-center'>
-        <p>計算中...</p>
-      </div>
+      <section className='my-6 text-center px-4' aria-live='polite' aria-label='計算状況'>
+        <p className='text-sm sm:text-base'>計算中...</p>
+      </section>
     )
   }
 
   if (error && !result) {
     return (
-      <div className='my-6 text-center'>
+      <section className='my-6 text-center' role='alert' aria-label='エラー情報'>
         <div className='mb-4'>
           <p className='text-red-600 mb-2'>⚠️ {error}</p>
           {onRetry && isNetworkError && (
             <button
               onClick={onRetry}
-              className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
+              className='px-6 py-3 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors min-h-[44px] touch-manipulation focus:ring-2 focus:ring-blue-300 focus:ring-offset-2'
+              aria-label='計算を再試行する'
             >
               再試行
             </button>
           )}
         </div>
-      </div>
+      </section>
     )
   }
 
   if (typeof result === 'undefined') {
     return (
-      <div className='my-6 text-center'>
-        <p>西暦を選択し、金額に数値を入れて、通貨を選択します</p>
-      </div>
+      <section className='my-6 text-center px-4' aria-label='使用方法'>
+        <p className='text-sm sm:text-base'>西暦を選択し、金額に数値を入れて、通貨を選択します</p>
+      </section>
     )
   }
 
   return (
-    <div className='my-6'>
+    <section className='my-6' aria-labelledby='result-heading'>
+      <h2 id='result-heading' className='sr-only'>計算結果</h2>
       {/* 警告メッセージ */}
       {(error || isUsingFallback) && (
-        <div className='mb-4 text-center'>
+        <div className='mb-4 text-center' role='alert' aria-live='polite'>
           <div className='inline-flex items-center px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-md'>
             <span className='text-yellow-800 text-sm'>
               ⚠️ {error || '為替レートは参考値です'}
@@ -78,7 +74,8 @@ const InflationResultComponent = ({
             {onRetry && (isNetworkError || isUsingFallback) && (
               <button
                 onClick={onRetry}
-                className='ml-3 px-3 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors'
+                className='ml-3 px-4 py-2 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors min-h-[36px] touch-manipulation focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2'
+                aria-label='データを再取得する'
               >
                 再試行
               </button>
@@ -88,41 +85,21 @@ const InflationResultComponent = ({
       )}
 
       {/* 結果表示 */}
-      <div className='flex justify-center items-center gap-4'>
-        <div className='text-center text-2xl sm:text-3xl'>
-          <span className='text-zinc-900 drop-shadow-[0_0_3px_rgba(255,255,255,0.7)]'>
+      <div className='flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6'>
+        <div className='text-center text-xl sm:text-2xl lg:text-3xl px-4' aria-live='polite'>
+          <span className='text-zinc-900 drop-shadow-[0_0_3px_rgba(255,255,255,0.7)] break-words'>
             {Number.isNaN(result) ? '計算できません' : resultStatement}
           </span>
         </div>
         {!Number.isNaN(result) && (
-          <div className='flex gap-1'>
-            <TwitterShareButton
-              url={`https://${URL_DOMAIN}${location}`}
-              title={shareStatement}
-              hashtags={['今いくら']}
-              className='transition-opacity hover:opacity-70'
-            >
-              <TwitterIcon size={32} round />
-            </TwitterShareButton>
-            <LineShareButton
-              url={`https://${URL_DOMAIN}${location}`}
-              title={shareStatement}
-              className='transition-opacity hover:opacity-70'
-            >
-              <LineIcon size={32} round />
-            </LineShareButton>
-            <EmailShareButton
-              subject={'今いくら'}
-              body={shareStatement}
-              url={`https://${URL_DOMAIN}${location}`}
-              className='transition-opacity hover:opacity-70'
-            >
-              <EmailIcon size={32} round />
-            </EmailShareButton>
+          <div aria-label='計算結果を共有'>
+            <Suspense fallback={<div className='w-24 h-8 bg-gray-200 rounded animate-pulse' aria-label='共有ボタンを読み込み中' />}>
+              <ShareButtons shareStatement={shareStatement} location={location} />
+            </Suspense>
           </div>
         )}
       </div>
-    </div>
+    </section>
   )
 }
 

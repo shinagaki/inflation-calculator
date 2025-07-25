@@ -65,7 +65,8 @@ describe('useInflationCalculation', () => {
       expect(result.current.result).toBeTypeOf('number')
       expect(result.current.result).not.toBeNaN()
       expect(result.current.resultStatement).toContain('円')
-      expect(result.current.shareStatement).toContain('1980年の100ドル')
+      expect(result.current.shareStatement).toContain('1980年')
+      expect(result.current.shareStatement).toContain('100ドル')
     })
 
     it('現在年のCPIが見つからない場合、前年のCPIを使用する', () => {

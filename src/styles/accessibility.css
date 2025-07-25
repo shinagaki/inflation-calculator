@@ -1,0 +1,71 @@
+/* アクセシビリティ支援クラス */
+
+/* スクリーンリーダー専用テキスト */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* フォーカス時に表示 */
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0.5rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+  border-radius: 0.25rem;
+  z-index: 9999;
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+  .bg-white\/90 {
+    background-color: rgb(255 255 255 / 1) !important;
+  }
+  
+  .text-zinc-900 {
+    color: #000000 !important;
+  }
+  
+  .text-zinc-200 {
+    color: #ffffff !important;
+  }
+  
+  .border-zinc-300 {
+    border-color: #000000 !important;
+  }
+}
+
+/* 動きを減らす設定に対応 */
+@media (prefers-reduced-motion: reduce) {
+  .transition-opacity,
+  .transition-colors,
+  .animate-pulse {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* フォーカスリングの改善 */
+.focus\:ring-2:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/* キーボードナビゲーション時のみフォーカスリングを表示 */
+.js-focus-visible .focus\:ring-2:focus:not(.focus-visible) {
+  box-shadow: none;
+}

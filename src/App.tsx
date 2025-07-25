@@ -7,9 +7,25 @@ const App = () => {
   const [backgroundLoaded, setBackgroundLoaded] = useState(false)
 
   useEffect(() => {
-    const img = new Image()
-    img.onload = () => setBackgroundLoaded(true)
-    img.src = '/img/background.webp'
+    // 画像の遅延読み込みとパフォーマンス最適化
+    const loadBackgroundImage = () => {
+      const img = new Image()
+      img.onload = () => setBackgroundLoaded(true)
+      img.onerror = () => {
+        // WebPが失敗した場合のフォールバック（将来の拡張用）
+        setBackgroundLoaded(true)
+      }
+      img.src = '/img/background.webp'
+    }
+
+    // Critical Resource Hintを活用して優先度を下げる
+    if (document.readyState === 'complete') {
+      setTimeout(loadBackgroundImage, 100)
+    } else {
+      window.addEventListener('load', () => {
+        setTimeout(loadBackgroundImage, 100)
+      })
+    }
   }, [])
 
   return (
