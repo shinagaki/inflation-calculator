@@ -19,7 +19,6 @@ const ShareButtons = ({ shareStatement, location }: ShareButtonsProps) => {
       <TwitterShareButton
         url={`https://${URL_DOMAIN}${location}`}
         title={shareStatement}
-        hashtags={['今いくら']}
         className='transition-opacity hover:opacity-70 focus:opacity-70 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 rounded-full'
         aria-label='計算結果をTwitterでシェア'
       >
