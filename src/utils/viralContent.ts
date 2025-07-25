@@ -7,20 +7,48 @@ interface ComparisonItem {
   unit: string
 }
 
-// 現代の身近な商品・サービス
+// 現代の身近な商品・サービス（価格帯別に整理）
 const COMPARISON_ITEMS: ComparisonItem[] = [
-  { name: 'スタバのコーヒー', price: 400, emoji: '☕', unit: '杯' },
-  { name: 'マクドナルドのセット', price: 700, emoji: '🍔', unit: '回' },
-  { name: '映画チケット', price: 1800, emoji: '🎬', unit: '回' },
-  { name: 'ランチ', price: 1000, emoji: '🍱', unit: '回' },
-  { name: 'カラオケ1時間', price: 500, emoji: '🎤', unit: '時間' },
-  { name: 'コンビニ弁当', price: 500, emoji: '🍙', unit: '個' },
-  { name: '本', price: 1500, emoji: '📚', unit: '冊' },
-  { name: 'Netflix1ヶ月', price: 1490, emoji: '📺', unit: 'ヶ月' },
-  { name: 'Spotify1ヶ月', price: 980, emoji: '🎵', unit: 'ヶ月' },
+  // 低価格帯（100-1000円）
+  { name: '缶コーヒー', price: 130, emoji: '☕', unit: '本' },
   { name: '電車初乗り', price: 150, emoji: '🚃', unit: '回' },
-  { name: 'タクシー初乗り', price: 500, emoji: '🚕', unit: '回' },
+  { name: 'ペットボトル飲料', price: 150, emoji: '🥤', unit: '本' },
   { name: 'ガソリン1L', price: 170, emoji: '⛽', unit: 'L' },
+  { name: 'おにぎり', price: 200, emoji: '🍙', unit: '個' },
+  { name: 'スタバのコーヒー', price: 400, emoji: '☕', unit: '杯' },
+  { name: 'カラオケ1時間', price: 500, emoji: '🎤', unit: '時間' },
+  { name: 'コンビニ弁当', price: 500, emoji: '🍱', unit: '個' },
+  { name: 'タクシー初乗り', price: 500, emoji: '🚕', unit: '回' },
+  { name: 'マクドナルドのセット', price: 700, emoji: '🍔', unit: '個' },
+  { name: 'Spotify1ヶ月', price: 980, emoji: '🎵', unit: 'ヶ月' },
+
+  // 中価格帯（1000-10000円）
+  { name: 'ランチ', price: 1000, emoji: '🍱', unit: '回' },
+  { name: 'Netflix1ヶ月', price: 1490, emoji: '📺', unit: 'ヶ月' },
+  { name: '本', price: 1500, emoji: '📚', unit: '冊' },
+  { name: '映画チケット', price: 1800, emoji: '🎬', unit: '回' },
+  { name: 'ディナー', price: 3000, emoji: '🍽️', unit: '回' },
+  { name: '理髪店', price: 4000, emoji: '💇', unit: '回' },
+  { name: 'ゲームソフト', price: 7000, emoji: '🎮', unit: '本' },
+  { name: '電気代（月）', price: 8000, emoji: '💡', unit: 'ヶ月' },
+
+  // 高価格帯（10000-100000円）
+  { name: '家族でのディズニー', price: 25000, emoji: '🏰', unit: '回' },
+  { name: 'ブランドバッグ', price: 50000, emoji: '👜', unit: '個' },
+  { name: '高級時計', price: 80000, emoji: '⌚', unit: '個' },
+
+  // 超高価格帯（100000-1000000円）
+  { name: 'iPhone最新モデル', price: 120000, emoji: '📱', unit: '台' },
+  { name: '海外旅行', price: 200000, emoji: '✈️', unit: '回' },
+  { name: '軽自動車', price: 1500000, emoji: '🚗', unit: '台' },
+
+  // 超々高価格帯（1000000円以上）
+  { name: '普通車', price: 3000000, emoji: '🚙', unit: '台' },
+  { name: '結婚式', price: 3000000, emoji: '💒', unit: '回' },
+  { name: '高級車', price: 8000000, emoji: '🏎️', unit: '台' },
+  { name: 'マンション頭金', price: 10000000, emoji: '🏠', unit: '回' },
+  { name: '一戸建て住宅', price: 40000000, emoji: '🏡', unit: '軒' },
+  { name: '高級マンション', price: 100000000, emoji: '🏢', unit: '戸' },
 ]
 
 // 年代別の特徴的なメッセージ
@@ -79,23 +107,57 @@ const SURPRISE_EXPRESSIONS = [
 
 // 商品比較メッセージ生成
 export const getComparisonMessage = (amount: number): string | null => {
-  // 金額に最も近い商品を見つける
-  const suitableItems = COMPARISON_ITEMS.filter(
-    item => amount >= item.price && amount < item.price * 100
-  )
+  // 金額帯に応じて適切な商品を見つける
+  let suitableItems = COMPARISON_ITEMS.filter(item => {
+    const ratio = amount / item.price
+    // 1-50倍の範囲で実感しやすい商品を選択
+    return ratio >= 1 && ratio <= 50
+  })
   
-  if (suitableItems.length === 0) return null
+  // 該当する商品がない場合は、より広い範囲で検索
+  if (suitableItems.length === 0) {
+    suitableItems = COMPARISON_ITEMS.filter(item => {
+      const ratio = amount / item.price
+      return ratio >= 0.5 && ratio <= 100
+    })
+  }
   
-  // 最も適切な商品を選択（価格差が最小のもの）
+  // それでもない場合は、最も近い価格の商品を選択
+  if (suitableItems.length === 0) {
+    suitableItems = [COMPARISON_ITEMS.reduce((closest, current) => {
+      return Math.abs(amount - current.price) < Math.abs(amount - closest.price) 
+        ? current : closest
+    })]
+  }
+  
+  // 最も適切な倍数になる商品を選択
   const bestMatch = suitableItems.reduce((best, current) => {
     const bestRatio = amount / best.price
     const currentRatio = amount / current.price
-    return Math.abs(bestRatio - Math.floor(bestRatio)) < Math.abs(currentRatio - Math.floor(currentRatio)) 
-      ? best : current
+    
+    // 2-20倍の範囲を最優先、次に1-50倍の範囲
+    const bestScore = getBestScore(bestRatio)
+    const currentScore = getBestScore(currentRatio)
+    
+    return currentScore > bestScore ? current : best
   })
   
   const count = Math.floor(amount / bestMatch.price)
+  
+  // 小数点が出る場合は「約」を付ける
+  if (amount / bestMatch.price - count > 0.2) {
+    return `${bestMatch.emoji} ${bestMatch.name}約${count + 1}${bestMatch.unit}分！`
+  }
+  
   return `${bestMatch.emoji} ${bestMatch.name}${count}${bestMatch.unit}分！`
+}
+
+// 比較の適切さを評価するスコア計算
+const getBestScore = (ratio: number): number => {
+  if (ratio >= 2 && ratio <= 20) return 10  // 最優先（2-20倍）
+  if (ratio >= 1 && ratio <= 50) return 5   // 次優先（1-50倍）
+  if (ratio >= 0.5 && ratio <= 100) return 2 // それ以外
+  return 1 // 範囲外
 }
 
 // 年代別メッセージ取得
