@@ -86,10 +86,14 @@ const InflationResultComponent = ({
 
       {/* 結果表示 */}
       <div className='flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6'>
-        <div className='text-center text-xl sm:text-2xl lg:text-3xl px-4' aria-live='polite'>
-          <span className='text-zinc-900 drop-shadow-[0_0_3px_rgba(255,255,255,0.7)] break-words'>
-            {Number.isNaN(result) ? '計算できません' : resultStatement}
-          </span>
+        <div className='text-center px-4' aria-live='polite'>
+          <div className='text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-900 drop-shadow-[0_0_3px_rgba(255,255,255,0.8)] break-words'>
+            {Number.isNaN(result) ? '計算できません' : (
+              <span className='bg-gradient-to-r from-zinc-700 via-zinc-800 to-zinc-900 bg-clip-text text-transparent'>
+                {resultStatement}
+              </span>
+            )}
+          </div>
         </div>
         {!Number.isNaN(result) && (
           <div aria-label='計算結果を共有'>
