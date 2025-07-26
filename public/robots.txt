@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# サイトマップの場所
+Sitemap: https://imaikura.creco.net/sitemap.xml
+
+# 主要ページの明示的な許可
+Allow: /1980/usd/100
+Allow: /1990/jpy/1000000
+Allow: /1970/gbp/50
+Allow: /2000/eur/500
+Allow: /1964/jpy/100
+Allow: /1950/usd/20
+
+# クロール頻度の調整（優先度の高い検索エンジンボット）
+User-agent: Googlebot
+Crawl-delay: 1
+
+User-agent: Bingbot
+Crawl-delay: 2
