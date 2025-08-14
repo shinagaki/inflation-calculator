@@ -95,6 +95,9 @@ export const TopPage = () => {
           onRetry={retry}
           isUsingFallback={isUsingFallback}
           isNetworkError={!!ratesError}
+          year={year}
+          currency={currency}
+          amount={amount}
         />
 
         {/* 詳細表示ボタン */}

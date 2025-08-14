@@ -13,6 +13,9 @@ interface InflationResultProps {
   onRetry?: () => void
   isUsingFallback?: boolean
   isNetworkError?: boolean
+  year?: string
+  currency?: string
+  amount?: string
 }
 
 const InflationResultComponent = ({
@@ -25,6 +28,9 @@ const InflationResultComponent = ({
   onRetry,
   isUsingFallback = false,
   isNetworkError = false,
+  year,
+  currency,
+  amount,
 }: InflationResultProps) => {
   if (loading) {
     return (
@@ -98,7 +104,14 @@ const InflationResultComponent = ({
         {!Number.isNaN(result) && (
           <div aria-label='計算結果を共有'>
             <Suspense fallback={<div className='w-24 h-8 bg-gray-200 rounded animate-pulse' aria-label='共有ボタンを読み込み中' />}>
-              <ShareButtons shareStatement={shareStatement} location={location} />
+              <ShareButtons 
+                shareStatement={shareStatement} 
+                location={location}
+                year={year}
+                currency={currency}
+                amount={amount}
+                result={result}
+              />
             </Suspense>
           </div>
         )}

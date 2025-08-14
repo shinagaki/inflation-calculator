@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react'
 import { Link, Route, Switch } from 'wouter'
 import { TopPage } from './components/TopPage'
 import { YEAR_NOW } from './constants'
+import { useAnalytics } from './hooks/useAnalytics'
 
 const App = () => {
   const [backgroundLoaded, setBackgroundLoaded] = useState(false)
+  
+  // Analytics initialization
+  useAnalytics()
 
   useEffect(() => {
     // 画像の遅延読み込みとパフォーマンス最適化

@@ -7,6 +7,7 @@ import {
 import { generateViralShareMessage } from '../utils/viralContent'
 import { useCpiData } from './useCpiData'
 import { useExchangeRates } from './useExchangeRates'
+import { useCalculationTracking } from './useAnalytics'
 
 interface UseInflationCalculationParams {
   year: string
@@ -35,6 +36,7 @@ export const useInflationCalculation = ({
   } = useExchangeRates()
 
   const { cpiData, loading: cpiLoading, error: cpiError } = useCpiData()
+  const { startCalculation, trackCalculation, trackCalculationError } = useCalculationTracking()
 
   const loading = ratesLoading || cpiLoading
 
@@ -47,6 +49,9 @@ export const useInflationCalculation = ({
         error: ratesError?.message || cpiError?.message || null,
       }
     }
+
+    // 計算開始時点を記録
+    startCalculation()
 
     try {
       // CPIデータの検証
@@ -145,6 +150,14 @@ export const useInflationCalculation = ({
         isUsingFallback
       )
 
+      // 成功時のアナリティクス追跡
+      trackCalculation({
+        year,
+        currency,
+        amount,
+        result
+      })
+
       return {
         result,
         resultStatement,
@@ -152,6 +165,15 @@ export const useInflationCalculation = ({
         error: isUsingFallback ? '為替レートは参考値です' : null,
       }
     } catch (err) {
+      // エラー時のアナリティクス追跡
+      trackCalculationError({
+        error_type: 'calculation',
+        error_message: err instanceof Error ? err.message : '計算エラーが発生しました',
+        year,
+        currency,
+        amount
+      })
+
       return {
         result: undefined,
         resultStatement: '',
@@ -169,6 +191,9 @@ export const useInflationCalculation = ({
     ratesError,
     cpiError,
     isUsingFallback,
+    startCalculation,
+    trackCalculation,
+    trackCalculationError,
   ])
 
   return {

@@ -20,10 +20,8 @@ export const useAnalytics = () => {
 
   // GA初期化
   useEffect(() => {
-    // 開発環境では無効化（本番環境のみ有効）
-    if (import.meta.env.PROD) {
-      initializeGA()
-    }
+    // 測定IDが設定されている場合のみ初期化（開発・本番問わず）
+    initializeGA()
   }, [])
 
   // ページ離脱時のエンゲージメント追跡
