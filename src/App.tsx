@@ -89,7 +89,7 @@ const App = () => {
           </div>
         </div>
       </header>
-      <main className='flex-grow flex items-center justify-center'>
+      <main className='flex-grow flex flex-col items-center justify-center'>
         <Switch>
           <Route path='/' component={TopPage} />
           <Route path='/:year/:currency/:amount' component={TopPage} />
