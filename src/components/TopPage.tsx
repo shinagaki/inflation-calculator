@@ -70,8 +70,8 @@ export const TopPage = () => {
   }
 
   return (
-    <div className={showDetails ? 'w-full max-w-4xl mx-auto px-4' : ''}>
-      {/* メイン計算機 */}
+    <>
+      {/* メイン計算機 - 常に固定幅 */}
       <div className='bg-white/50 hover:bg-white/60 backdrop-blur-lg border border-white/25 shadow-lg rounded-lg px-8 py-6 max-w-xl mx-auto'>
         <div className='mb-5 sm:mb-10'>
           <InflationForm
@@ -113,9 +113,9 @@ export const TopPage = () => {
         )}
       </div>
 
-      {/* SEOコンテンツセクション（トグル表示） */}
+      {/* SEOコンテンツセクション（トグル表示） - 独立したコンテナ */}
       {showDetails && match && !loading && !error && (
-        <div className='mt-8'>
+        <div className='w-full max-w-4xl mx-auto px-4 mt-8'>
           <SEOContent
             year={year}
             currency={currency}
@@ -132,6 +132,6 @@ export const TopPage = () => {
           <FAQSection />
         </div>
       )}
-    </div>
+    </>
   )
 }
