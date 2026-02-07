@@ -143,6 +143,7 @@ const App = () => {
               </Link>
             </li>
           </ul>
+          <span className='text-zinc-400 ml-1'>（{YEAR_NOW}年更新）</span>
         </div>
         <div className='text-right'>
           ©{YEAR_NOW}{' '}
