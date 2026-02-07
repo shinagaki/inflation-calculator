@@ -13,6 +13,7 @@ export const YEAR_MIN = 1900
 export const YEAR_NOW = new Date().getFullYear()
 export const YEAR_DEFAULT = 1950
 export const URL_DOMAIN = 'imaikura.creco.net'
+export const OG_IMAGE_BASE = 'https://creco.net/misc/imaikura/og'
 
 export const YEAR_MAX = YEAR_NOW - 1
 export const YEAR_LIST = Array.from(

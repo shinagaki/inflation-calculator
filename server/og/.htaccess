@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# キャッシュ済み画像が存在すればそのまま配信
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# /og/{year}/{currency}/{amount}.png → index.php
+RewriteRule ^(\d+)/(jpy|usd|gbp|eur)/(\d+(?:\.\d+)?)\.png$ index.php?year=$1&currency=$2&amount=$3 [L,QSA]

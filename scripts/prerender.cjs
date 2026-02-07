@@ -14,6 +14,7 @@ const fs = require('fs')
 const path = require('path')
 
 const DOMAIN = 'imaikura.creco.net'
+const OG_IMAGE_BASE = 'https://creco.net/misc/imaikura/og'
 const DIST_DIR = path.join(__dirname, '..', 'dist')
 const YEAR_NOW = new Date().getFullYear()
 
@@ -213,7 +214,7 @@ function generateHTML(template, { year, currency, amount, result }) {
   )
 
   // OG image
-  const ogImageUrl = `https://${DOMAIN}/og/${year}/${currency}/${amount}.png`
+  const ogImageUrl = `${OG_IMAGE_BASE}/${year}/${currency}/${amount}.png?r=${result}`
   html = html.replace(
     /<meta property="og:image" content=".*?" \/>/,
     `<meta property="og:image" content="${ogImageUrl}" />`,

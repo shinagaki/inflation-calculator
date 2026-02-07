@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { URL_DOMAIN } from '../constants'
+import { OG_IMAGE_BASE, URL_DOMAIN } from '../constants'
 import { formatCurrency } from '../utils/calculations'
 import {
   generateCalculatorStructuredData,
@@ -48,7 +48,7 @@ const generateSEOTags = (data: SEOData): SEOMetaTags => {
       ogTitle: `💰${data.year}年の${formattedAmount}${currencyLabel}は今${formattedResult}円！`,
       ogDescription: `昔のお金の価値を今の価値に換算。${data.year}年の${formattedAmount}${currencyLabel}は現在の${formattedResult}円相当です。`,
       ogUrl: `https://${URL_DOMAIN}${data.location || '/'}`,
-      ogImage: `https://${URL_DOMAIN}/og/${data.year}/${data.currency}/${data.amount}.png`,
+      ogImage: `${OG_IMAGE_BASE}/${data.year}/${data.currency}/${data.amount}.png?r=${data.result}`,
       twitterTitle: `${data.year}年の${formattedAmount}${currencyLabel} → 今なら${formattedResult}円！`,
       twitterDescription: `昔のお金の価値、今と比べてどれくらい？インフレ計算で正確に算出。`,
     }
@@ -65,7 +65,7 @@ const generateSEOTags = (data: SEOData): SEOMetaTags => {
     ogDescription:
       'あの時代のお金って今だといくら？年代と金額を入れるだけで、現在の日本円に換算します。',
     ogUrl: `https://${URL_DOMAIN}/`,
-    ogImage: `https://${URL_DOMAIN}/og/default.png`,
+    ogImage: `https://${URL_DOMAIN}/img/og-default.png`,
     twitterTitle: '昔のお金の価値、今だといくら？',
     twitterDescription:
       '年代と金額を入れるだけで現在の価値がわかる！インフレ計算機',

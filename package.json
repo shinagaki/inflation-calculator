@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && node scripts/generate-sitemap.cjs && vite build && node scripts/prerender.cjs && node scripts/generate-og.js",
+    "build": "tsc && node scripts/generate-sitemap.cjs && vite build && node scripts/prerender.cjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "check": "biome check ./",
     "check:fix": "biome check --apply ./",
