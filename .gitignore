@@ -38,3 +38,6 @@ IMPROVEMENT_ANALYSIS.md
 
 # テストカバレッジレポート
 coverage/
+
+# Playwright MCP artifacts
+.playwright-mcp/
