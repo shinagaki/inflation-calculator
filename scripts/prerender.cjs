@@ -187,6 +187,13 @@ function generateHTML(template, { year, currency, amount, result }) {
     `<meta property="og:url" content="${canonicalUrl}" />`,
   )
 
+  // OG image
+  const ogImageUrl = `https://${DOMAIN}/og/${year}/${currency}/${amount}.png`
+  html = html.replace(
+    /<meta property="og:image" content=".*?" \/>/,
+    `<meta property="og:image" content="${ogImageUrl}" />`,
+  )
+
   // Twitter Card
   html = html.replace(
     /<meta name="twitter:title" content=".*?" \/>/,
@@ -195,6 +202,10 @@ function generateHTML(template, { year, currency, amount, result }) {
   html = html.replace(
     /<meta name="twitter:description" content=".*?" \/>/,
     `<meta name="twitter:description" content="${description}" />`,
+  )
+  html = html.replace(
+    /<meta name="twitter:image" content=".*?" \/>/,
+    `<meta name="twitter:image" content="${ogImageUrl}" />`,
   )
 
   // 構造化データを </head> の前に挿入
