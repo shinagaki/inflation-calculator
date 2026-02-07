@@ -29,22 +29,20 @@
 
 ### 日本 (JPY)
 
-**公式サイト**: [総務省統計局 消費者物価指数](https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.html)
+**公式サイト**:
+- [総務省統計局 消費者物価指数（月次）](https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.html)
+- [総務省統計局 消費者物価指数（年平均）](https://www.stat.go.jp/data/cpi/sokuhou/nen/index-z.html)
 
-**取得方法**:
+**取得方法（年平均が公開された後）**:
 ```
-WebFetch: https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.html
-プロンプト: 最新の消費者物価指数（CPI）の総合指数の値と、その年月を教えてください。2020年基準=100での値を探してください。
+WebFetch: https://www.stat.go.jp/data/cpi/sokuhou/nen/index-z.html
+プロンプト: 最新の消費者物価指数（CPI）の年平均の総合指数の値を教えてください。2020年基準=100での値です。前年比も教えてください。
 ```
 
 **注意点**:
 - 基準年: 2020年=100
-- 月次データから年間平均を計算する必要がある
-- 既存データは別の基準年で換算済みのため、過去データとの整合性を確認
-
-**年間平均の計算**:
-- 12ヶ月分の月次データを取得し、平均を計算
-- または、総務省の年報データを待つ
+- 年平均は毎年1月下旬に12月分と同時公開される
+- 年平均ページから直接取得できるので、月次計算は不要
 
 ---
 
@@ -95,22 +93,32 @@ WebFetch: https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7b
 
 ---
 
-### EU/ユーロ圏 (EUR)
+### EU (EUR)
+
+**重要**: CSV の EUR 列は「ユーロ圏（EA）」ではなく「**EU全体**（geo=EU）」のデータ。
 
 **公式サイト**:
 - [Eurostat HICP](https://ec.europa.eu/eurostat/web/hicp)
-- [FRED Euro Area HICP](https://fred.stlouisfed.org/series/CP0000EZ19M086NEST)
+- [Eurostat prc_hicp_aind（年次データ）](https://ec.europa.eu/eurostat/databrowser/product/view/prc_hicp_aind)
 
-**取得方法**:
+**取得方法（推奨: Eurostat API）**:
 ```
-WebFetch: https://fred.stlouisfed.org/series/CP0000EZ19M086NEST
-プロンプト: Euro Area HICPの最新の指数値（2015=100基準）を教えてください。2024年と2025年の月次データがあれば、それも教えてください。
+WebFetch: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_aind?format=JSON&geo=EU&unit=INX_A_AVG&coicop=CP00&time=2024&time=2025
+プロンプト: JSONデータの中から、年次のHICP指数値（annual average index）を年ごとに教えてください。
 ```
+
+**代替取得方法（FRED: 月次データから手動計算）**:
+```
+WebFetch: https://fred.stlouisfed.org/data/CP0000EZ19M086NEST.txt
+プロンプト: 2025年の各月（2025-01から2025-12）のHICPデータを教えてください。
+```
+※ FRED の EA19 シリーズは「ユーロ圏19カ国」であり CSV の値とは異なるため、Eurostat API の `geo=EU` を使うこと。
 
 **注意点**:
 - 基準年: 2015=100（2026年以降は2025=100に変更予定）
-- Eurostatのデータブラウザは直接fetch不可（JavaScript動的読み込み）
-- FREDを使うと取得しやすい
+- Eurostat API で `geo=EU`、`unit=INX_A_AVG`、`coicop=CP00` を指定
+- Eurostat のデータブラウザは直接 fetch 不可（JavaScript 動的読み込み）
+- API で年次平均を直接取得するのが最も確実
 
 ---
 
@@ -216,7 +224,7 @@ JavaScriptで動的に読み込むため:
 - 日本: 2020=100（CSVでは換算済み）
 - 米国: 1982-84=100
 - 英国: 2015=100
-- EU: 2015=100
+- EU: 2015=100（`geo=EU` を使用。`geo=EA` ではないので注意）
 
 過去データは既に換算済みのため、新しいデータも同じ基準で入力すること。
 
@@ -227,3 +235,4 @@ JavaScriptで動的に読み込むため:
 | 日付 | 更新内容 |
 |------|---------|
 | 2026-01-11 | ドキュメント作成 |
+| 2026-02-07 | 2025年年平均データで更新。EUR列がEU全体(geo=EU)であることを確認・追記 |
