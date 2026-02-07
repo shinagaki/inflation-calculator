@@ -14,7 +14,8 @@ export const YEAR_NOW = new Date().getFullYear()
 export const YEAR_DEFAULT = 1950
 export const URL_DOMAIN = 'imaikura.creco.net'
 
+export const YEAR_MAX = YEAR_NOW - 1
 export const YEAR_LIST = Array.from(
-  Array(YEAR_NOW - YEAR_MIN + 1).keys(),
+  Array(YEAR_MAX - YEAR_MIN + 1).keys(),
   x => x + YEAR_MIN,
 )

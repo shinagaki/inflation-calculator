@@ -47,7 +47,7 @@ export interface CalculationEvent {
 }
 
 export interface ShareEvent {
-  platform: 'twitter' | 'line' | 'email'
+  platform: 'twitter' | 'bluesky' | 'line' | 'email'
   year: string
   currency: string
   amount: string

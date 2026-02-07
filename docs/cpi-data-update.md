@@ -190,6 +190,59 @@ year,usd,jpy,gbp,eur,新通貨コード
 
 ---
 
+## 通貨追加の調査結果（2026年2月時点）
+
+以下の通貨について追加の可否を調査した。現時点では保留とするが、需要があれば対応可能。
+
+### World Bank API（統一的なデータソース）
+
+World Bank API で CPI 年次平均データを取得可能。基準年は 2010=100。
+既存通貨（USD/JPY/GBP/EUR）との基準年は異なるが、CPI 計算は比率（cpiNow/cpiThen）を使うため問題なし。
+
+```
+https://api.worldbank.org/v2/country/{国コード}/indicator/FP.CPI.TOTL?format=json&per_page=100
+```
+
+### 調査結果一覧
+
+| 通貨 | 国コード | データ期間 | 基準年 | 取得方法 | 実現性 |
+|------|---------|-----------|--------|---------|--------|
+| **AUD**（豪ドル） | AUS | 1960〜2024 | 2010=100 | World Bank API | ◎ 容易 |
+| **KRW**（韓国ウォン） | KOR | 1960〜2024 | 2010=100 | World Bank API | ◎ 容易 |
+| **CNY**（中国元） | CHN | 1986〜2024 | 2010=100 | World Bank API | ○ 可能（1986年〜） |
+| **TWD**（台湾ドル） | — | — | — | DGBAS（台湾主計総処） | △ 困難 |
+
+### 各通貨の詳細
+
+**AUD（豪ドル）**:
+- World Bank API: `country/AUS/indicator/FP.CPI.TOTL`
+- 1960年から2024年まで65年分のデータあり
+- CoinGecko の為替レートにも対応済み
+
+**KRW（韓国ウォン）**:
+- World Bank API: `country/KOR/indicator/FP.CPI.TOTL`
+- 1960年から2024年まで65年分のデータあり
+- CoinGecko の為替レートにも対応済み
+
+**CNY（中国元）**:
+- World Bank API: `country/CHN/indicator/FP.CPI.TOTL`
+- 1986年から2024年まで39年分のデータ
+- 1986年以前のデータは不完全
+
+**TWD（台湾ドル）**:
+- World Bank に台湾のデータなし（国際機関の制約）
+- DGBAS（台湾行政院主計総処）のサイトから取得する必要があるが、APIが不安定
+- FRED には前年比（%変化）のみで指数値なし
+- 実装する場合は独自のデータ収集が必要
+
+### World Bank API の注意点
+
+- 最新年（例: 2025年）のデータは翌年中盤（2026年6〜9月頃）に公開
+- 既存通貨のデータ（USD等）と World Bank データを比較検証済み。基準年は異なるが比率での整合性は確認済み
+- 新通貨を追加する場合、CSV に列を追加し `scripts/convert-cpi.js` の対応が必要
+
+---
+
 ## 主要国のCPIデータソース（将来の参考）
 
 | 国/地域 | 統計機関 | URL |
@@ -198,6 +251,7 @@ year,usd,jpy,gbp,eur,新通貨コード
 | オーストラリア | ABS | https://www.abs.gov.au/ |
 | 韓国 | KOSTAT | https://kostat.go.kr/ |
 | 中国 | NBS | http://www.stats.gov.cn/ |
+| 台湾 | DGBAS | https://www.dgbas.gov.tw/ |
 | インド | MOSPI | https://mospi.gov.in/ |
 | ブラジル | IBGE | https://www.ibge.gov.br/ |
 | スイス | BFS | https://www.bfs.admin.ch/ |
@@ -236,3 +290,4 @@ JavaScriptで動的に読み込むため:
 |------|---------|
 | 2026-01-11 | ドキュメント作成 |
 | 2026-02-07 | 2025年年平均データで更新。EUR列がEU全体(geo=EU)であることを確認・追記 |
+| 2026-02-07 | 通貨追加調査結果（AUD/KRW/TWD/CNY）を追記。World Bank APIでの取得方法を記録 |

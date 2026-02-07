@@ -1,4 +1,4 @@
-import { AMOUNT_MAX, YEAR_MIN, YEAR_NOW } from '../constants'
+import { AMOUNT_MAX, YEAR_MAX, YEAR_MIN } from '../constants'
 
 export const validateYear = (year: string): boolean => {
   const yearNumber = Math.trunc(Number(year))
@@ -6,7 +6,7 @@ export const validateYear = (year: string): boolean => {
     !Number.isNaN(yearNumber) &&
     year === yearNumber.toString() &&
     yearNumber >= YEAR_MIN &&
-    yearNumber <= YEAR_NOW
+    yearNumber <= YEAR_MAX
   )
 }
 

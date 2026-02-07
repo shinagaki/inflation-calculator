@@ -1,7 +1,20 @@
 import { memo, lazy, Suspense } from 'react'
+import { formatCurrency } from '../utils/calculations'
+import { useCountUp } from '../hooks/useCountUp'
 
 // シェア機能の遅延読み込み
 const ShareButtons = lazy(() => import('./ShareButtons'))
+
+const AnimatedResult = ({ result, isUsingFallback }: { result: number; isUsingFallback: boolean }) => {
+  const animatedValue = useCountUp(result)
+  const suffix = isUsingFallback ? '円（参考値）' : '円'
+
+  return (
+    <span className='bg-gradient-to-r from-zinc-700 via-zinc-800 to-zinc-900 bg-clip-text text-transparent'>
+      {formatCurrency(animatedValue)}{suffix}
+    </span>
+  )
+}
 
 interface InflationResultProps {
   result?: number
@@ -20,7 +33,6 @@ interface InflationResultProps {
 
 const InflationResultComponent = ({
   result,
-  resultStatement,
   shareStatement,
   location,
   loading,
@@ -95,9 +107,7 @@ const InflationResultComponent = ({
         <div className='text-center px-4' aria-live='polite'>
           <div className='text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-900 drop-shadow-[0_0_3px_rgba(255,255,255,0.8)] break-words'>
             {Number.isNaN(result) ? '計算できません' : (
-              <span className='bg-gradient-to-r from-zinc-700 via-zinc-800 to-zinc-900 bg-clip-text text-transparent'>
-                {resultStatement}
-              </span>
+              <AnimatedResult result={result} isUsingFallback={isUsingFallback} />
             )}
           </div>
         </div>

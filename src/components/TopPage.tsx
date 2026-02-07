@@ -72,7 +72,7 @@ export const TopPage = () => {
   return (
     <>
       {/* メイン計算機 - 常に固定幅 */}
-      <div className='bg-white/50 hover:bg-white/60 backdrop-blur-lg border border-white/25 shadow-lg rounded-lg px-8 py-6 max-w-xl mx-auto'>
+      <div className='bg-white/50 hover:bg-white/60 backdrop-blur-lg border border-white/25 shadow-[0_8px_32px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-2xl px-8 py-6 max-w-xl mx-auto transition-shadow duration-300'>
         <div className='mb-5 sm:mb-10'>
           <InflationForm
             year={year}

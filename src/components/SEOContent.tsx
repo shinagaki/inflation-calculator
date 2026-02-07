@@ -61,7 +61,7 @@ const SEOContentComponent = ({
             <ul className='text-xs space-y-1'>
               <li>• 各国政府発表の公式CPI統計</li>
               <li>• 1900年〜現在まで100年以上のデータ</li>
-              <li>• 定期的なデータ更新で最新情報を反映</li>
+              <li>• 毎年のデータ更新で最新情報を反映</li>
             </ul>
           </div>
           <div className='bg-gray-50 p-4 rounded'>
