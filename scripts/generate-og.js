@@ -23,12 +23,37 @@ const DIST_DIR = path.join(__dirname, '..', 'dist')
 const YEAR_NOW = new Date().getFullYear()
 
 // フォールバック為替レート（prerender.cjs と同じ）
-const EXCHANGE_RATES = {
+const FALLBACK_RATES = {
   jpy: 1,
   usd: 1 / 0.0067,
   gbp: 1 / 0.0053,
   eur: 1 / 0.0061,
 }
+
+/** CoinGecko API から最新の為替レートを取得 */
+async function fetchExchangeRates() {
+  try {
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/exchange_rates',
+    )
+    const rates = (await res.json()).rates
+    const result = {
+      jpy: 1,
+      usd: rates.jpy.value / rates.usd.value,
+      gbp: rates.jpy.value / rates.gbp.value,
+      eur: rates.jpy.value / rates.eur.value,
+    }
+    console.log(
+      `  為替レート取得成功: USD=${result.usd.toFixed(2)}, GBP=${result.gbp.toFixed(2)}, EUR=${result.eur.toFixed(2)}`,
+    )
+    return result
+  } catch {
+    console.warn('  為替レート取得失敗、フォールバック使用')
+    return FALLBACK_RATES
+  }
+}
+
+let EXCHANGE_RATES = FALLBACK_RATES
 
 const CURRENCY_LABELS = {
   jpy: '円',
@@ -42,6 +67,7 @@ const FONT_CHARS = [
   '年の万億兆千円約現在価値',         // 計算結果
   'ドルポンドユーロ',                   // 通貨名
   'いくら今昔お金を換算にへ',         // デフォルト OG
+  '月日時点レトで計',                   // 日付注釈
   '0123456789,.',                       // 数字・記号
   '▼ ',                                 // 矢印・スペース
   'abcdefghijklmnopqrstuvwxyz',         // ドメイン名
@@ -216,7 +242,7 @@ function h(type, style, ...children) {
 
 // ---------- OG 画像レイアウト ----------
 
-function createOgElement(yearText, inputText, formatted, sizeTier) {
+function createOgElement(yearText, inputText, formatted, sizeTier, dateLabel) {
   const sizes = SIZE_CONFIG[sizeTier]
 
   return h(
@@ -298,6 +324,17 @@ function createOgElement(yearText, inputText, formatted, sizeTier) {
         },
         formatted.suffix,
       ),
+    ),
+    // 日付注釈
+    h(
+      'div',
+      {
+        fontSize: 16,
+        fontWeight: 700,
+        color: '#666666',
+        marginTop: 12,
+      },
+      dateLabel,
     ),
     // サイト名
     h(
@@ -418,6 +455,13 @@ async function main() {
     process.exit(1)
   }
 
+  // 為替レート取得
+  EXCHANGE_RATES = await fetchExchangeRates()
+
+  // 日付ラベル生成
+  const now = new Date()
+  const dateLabel = `${now.getMonth() + 1}月${now.getDate()}日時点のレートで計算`
+
   // フォント読み込み
   console.log('フォント読み込み中...')
   const [fontBold, fontBlack] = await Promise.all([
@@ -446,7 +490,7 @@ async function main() {
     const yearText = `${route.year}年の`
     const sizeTier = getSizeTier(result)
 
-    const element = createOgElement(yearText, inputText, formatted, sizeTier)
+    const element = createOgElement(yearText, inputText, formatted, sizeTier, dateLabel)
     const png = await renderPng(element, fonts)
 
     const outputPath = path.join(

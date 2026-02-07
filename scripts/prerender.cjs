@@ -18,12 +18,37 @@ const DIST_DIR = path.join(__dirname, '..', 'dist')
 const YEAR_NOW = new Date().getFullYear()
 
 // フォールバック為替レート（CoinGecko BTC 基準: JPY/通貨）
-const EXCHANGE_RATES = {
+const FALLBACK_RATES = {
   jpy: 1,
   usd: 1 / 0.0067,
   gbp: 1 / 0.0053,
   eur: 1 / 0.0061,
 }
+
+/** CoinGecko API から最新の為替レートを取得 */
+async function fetchExchangeRates() {
+  try {
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/exchange_rates',
+    )
+    const rates = (await res.json()).rates
+    const result = {
+      jpy: 1,
+      usd: rates.jpy.value / rates.usd.value,
+      gbp: rates.jpy.value / rates.gbp.value,
+      eur: rates.jpy.value / rates.eur.value,
+    }
+    console.log(
+      `  為替レート取得成功: USD=${result.usd.toFixed(2)}, GBP=${result.gbp.toFixed(2)}, EUR=${result.eur.toFixed(2)}`,
+    )
+    return result
+  } catch {
+    console.warn('  為替レート取得失敗、フォールバック使用')
+    return FALLBACK_RATES
+  }
+}
+
+let EXCHANGE_RATES = FALLBACK_RATES
 
 const CURRENCY_LABELS = {
   jpy: '円',
@@ -226,8 +251,10 @@ function generateHTML(template, { year, currency, amount, result }) {
 }
 
 // メイン処理
-function main() {
+async function main() {
   console.log('プリレンダリング開始...\n')
+
+  EXCHANGE_RATES = await fetchExchangeRates()
 
   const templatePath = path.join(DIST_DIR, 'index.html')
   if (!fs.existsSync(templatePath)) {
@@ -268,4 +295,7 @@ function main() {
   console.log(`\nプリレンダリング完了: ${count}/${routes.length} ページ生成`)
 }
 
-main()
+main().catch((err) => {
+  console.error('プリレンダリングエラー:', err)
+  process.exit(1)
+})
