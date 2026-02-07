@@ -7,6 +7,14 @@ interface RelatedCalculationsProps {
   currentAmount: string
 }
 
+// 各通貨のCPIデータ開始年
+const currencyMinYear: Record<string, number> = {
+  usd: 1800,
+  jpy: 1947,
+  gbp: 1800,
+  eur: 1996,
+}
+
 const RelatedCalculationsComponent = ({
   currentYear,
   currentCurrency,
@@ -35,12 +43,13 @@ const RelatedCalculationsComponent = ({
     }> = []
     
     // 同じ通貨で異なる年代
+    const minYear = currencyMinYear[currentCurrency] || 1900
     const yearVariations = [
       baseYear - 10,
       baseYear - 20,
       baseYear + 10,
       baseYear - 5
-    ].filter(year => year >= 1900 && year <= new Date().getFullYear())
+    ].filter(year => year >= minYear && year <= new Date().getFullYear() - 1)
     
     yearVariations.slice(0, 2).forEach(year => {
       suggestions.push({
@@ -51,8 +60,10 @@ const RelatedCalculationsComponent = ({
       })
     })
     
-    // 同じ年代で異なる通貨
-    const currencies = ['usd', 'gbp', 'eur', 'jpy'].filter(c => c !== currentCurrency)
+    // 同じ年代で異なる通貨（その年にCPIデータがある通貨のみ）
+    const currencies = ['usd', 'gbp', 'eur', 'jpy'].filter(
+      c => c !== currentCurrency && baseYear >= (currencyMinYear[c] || 1900)
+    )
     currencies.slice(0, 2).forEach(currency => {
       suggestions.push({
         year: currentYear,

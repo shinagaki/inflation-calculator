@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useRoute } from 'wouter'
 import { AMOUNT_DEFAULT, YEAR_DEFAULT } from '../constants'
+import { useCpiData } from '../hooks/useCpiData'
 import { useExchangeRates } from '../hooks/useExchangeRates'
 import { useInflationCalculation } from '../hooks/useInflationCalculation'
 import { useSEO } from '../hooks/useSEO'
@@ -9,6 +10,7 @@ import {
   validateCurrency,
   validateYear,
 } from '../utils/validators'
+import { CpiTrendChart } from './CpiTrendChart'
 import { InflationForm } from './InflationForm'
 import { InflationResult } from './InflationResult'
 import { LoadingSpinner } from './LoadingSpinner'
@@ -47,6 +49,7 @@ export const TopPage = () => {
     })
 
   const { retry, isUsingFallback, error: ratesError } = useExchangeRates()
+  const { cpiData } = useCpiData()
 
   // SEO optimization
   useSEO({
@@ -122,7 +125,15 @@ export const TopPage = () => {
             amount={amount}
             result={result}
           />
-          
+
+          {cpiData && (
+            <CpiTrendChart
+              cpiData={cpiData}
+              currency={currency}
+              selectedYear={year}
+            />
+          )}
+
           <RelatedCalculations
             currentYear={year}
             currentCurrency={currency}
