@@ -27,7 +27,6 @@
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
     "@resvg/resvg-js": "^2.6.2",
-    "@resvg/resvg-js-win32-x64-msvc": "^2.6.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -54,5 +53,8 @@
     "typescript": "^5.2.2",
     "vite": "^5.4.19",
     "vitest": "^3.2.3"
+  },
+  "optionalDependencies": {
+    "@resvg/resvg-js-win32-x64-msvc": "^2.6.2"
   }
 }
