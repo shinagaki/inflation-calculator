@@ -37,7 +37,7 @@ const SEOContentComponent = ({
             過去のお金の価値を正確に現在の価値に換算します。
           </p>
           
-          {result && (
+          {result != null && (
             <p className='bg-blue-50 p-3 rounded border-l-4 border-blue-400'>
               <strong>計算結果：</strong>{year}年の{amount}{currency.toUpperCase()}は
               現在約<span className='text-blue-600 font-bold text-lg'>{result.toLocaleString()}円</span>の価値に相当します。

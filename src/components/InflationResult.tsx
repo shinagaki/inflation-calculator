@@ -52,7 +52,7 @@ const InflationResultComponent = ({
     )
   }
 
-  if (error && !result) {
+  if (error && result == null) {
     return (
       <section className='my-6 text-center' role='alert' aria-label='エラー情報'>
         <div className='mb-4'>

@@ -41,7 +41,7 @@ export const generateCalculatorStructuredData = (
   }
 
   // 計算結果がある場合は、より詳細な構造化データを追加
-  if (props.year && props.currency && props.amount && props.result) {
+  if (props.year && props.currency && props.amount && props.result != null) {
     const currencyLabel =
       {
         jpy: '円',

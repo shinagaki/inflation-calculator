@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useRoute } from 'wouter'
 import { AMOUNT_DEFAULT, YEAR_DEFAULT } from '../constants'
 import { useCpiData } from '../hooks/useCpiData'
@@ -13,7 +13,6 @@ import {
 import { CpiTrendChart } from './CpiTrendChart'
 import { InflationForm } from './InflationForm'
 import { InflationResult } from './InflationResult'
-import { LoadingSpinner } from './LoadingSpinner'
 import { SEOContent } from './SEOContent'
 import { FAQSection } from './FAQSection'
 import { RelatedCalculations } from './RelatedCalculations'
@@ -27,15 +26,20 @@ export const TopPage = () => {
   let currency = 'usd'
   let amount = AMOUNT_DEFAULT.toString()
 
-  if (match) {
-    if (
-      !validateYear(params.year) ||
-      !validateCurrency(params.currency) ||
-      !validateAmount(params.amount)
-    ) {
+  const isInvalidParams = match && (
+    !validateYear(params.year) ||
+    !validateCurrency(params.currency) ||
+    !validateAmount(params.amount)
+  )
+
+  // 無効なパラメータの場合はデフォルトにリダイレクト（useEffect で副作用として実行）
+  useEffect(() => {
+    if (isInvalidParams) {
       setLocation('/')
-      return <LoadingSpinner />
     }
+  }, [isInvalidParams, setLocation])
+
+  if (match && !isInvalidParams) {
     year = params.year
     currency = params.currency
     amount = params.amount
@@ -104,7 +108,7 @@ export const TopPage = () => {
         />
 
         {/* 詳細表示ボタン */}
-        {match && !loading && !error && result && (
+        {match && !loading && !error && result != null && (
           <div className='mt-6 text-center'>
             <button
               onClick={() => setShowDetails(!showDetails)}

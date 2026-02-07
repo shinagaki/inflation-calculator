@@ -29,7 +29,7 @@ interface SEOMetaTags {
 const generateSEOTags = (data: SEOData): SEOMetaTags => {
   const isCalculation = data.year && data.currency && data.amount
 
-  if (isCalculation && data.result && data.currency) {
+  if (isCalculation && data.result != null && data.currency) {
     const currencyMap: Record<string, string> = {
       jpy: '円',
       usd: 'ドル',
