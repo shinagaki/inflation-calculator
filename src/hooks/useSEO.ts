@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { OG_IMAGE_BASE, URL_DOMAIN } from '../constants'
-import { formatCurrency } from '../utils/calculations'
+import { formatCurrency, toJapaneseEra } from '../utils/calculations'
 import {
   generateCalculatorStructuredData,
   injectStructuredData,
@@ -40,11 +40,13 @@ const generateSEOTags = (data: SEOData): SEOMetaTags => {
 
     const formattedAmount = formatCurrency(Number(data.amount))
     const formattedResult = formatCurrency(data.result)
+    const eraName = toJapaneseEra(Number(data.year))
+    const eraKeyword = eraName ? `,${eraName}` : ''
 
     return {
       title: `${data.year}年の${formattedAmount}${currencyLabel}は今${formattedResult}円 | 今いくら`,
-      description: `${data.year}年の${formattedAmount}${currencyLabel}を現在の日本円に換算すると${formattedResult}円です。インフレ率を考慮した正確な価値を計算できます。`,
-      keywords: `インフレ計算,${data.year}年,${currencyLabel},物価,昔の価値,現在価値,CPI,消費者物価指数`,
+      description: `${data.year}年${eraName ? `（${eraName}）` : ''}の${formattedAmount}${currencyLabel}を現在の日本円に換算すると${formattedResult}円です。インフレ率を考慮した正確な価値を計算できます。`,
+      keywords: `インフレ計算,${data.year}年${eraKeyword},${currencyLabel},物価,昔の価値,現在価値,CPI,消費者物価指数,貨幣価値 換算`,
       ogTitle: `💰${data.year}年の${formattedAmount}${currencyLabel}は今${formattedResult}円！`,
       ogDescription: `昔のお金の価値を今の価値に換算。${data.year}年の${formattedAmount}${currencyLabel}は現在の${formattedResult}円相当です。`,
       ogUrl: `https://${URL_DOMAIN}${data.location || '/'}`,
@@ -60,7 +62,7 @@ const generateSEOTags = (data: SEOData): SEOMetaTags => {
     description:
       '昔のお金の価値を現在の日本円に換算するインフレ計算機。1900年から現在まで、ドル・ポンド・ユーロ・円の価値変動をCPIデータで正確に計算します。',
     keywords:
-      'インフレ計算,物価計算,昔の価値,現在価値,CPI,消費者物価指数,ドル,ポンド,ユーロ,円',
+      'インフレ計算,物価計算,昔の価値,現在価値,CPI,消費者物価指数,貨幣価値 換算,昭和,平成,令和,ドル,ポンド,ユーロ,円',
     ogTitle: '今いくら - 昔のお金の価値計算機',
     ogDescription:
       'あの時代のお金って今だといくら？年代と金額を入れるだけで、現在の日本円に換算します。',

@@ -1,5 +1,5 @@
 import { URL_DOMAIN, YEAR_NOW } from '../constants'
-import { formatCurrency } from './calculations'
+import { formatCurrency, toJapaneseEra } from './calculations'
 
 interface StructuredDataProps {
   year?: string
@@ -50,6 +50,9 @@ export const generateCalculatorStructuredData = (
         eur: 'ユーロ',
       }[props.currency] || props.currency.toUpperCase()
 
+    const eraName = toJapaneseEra(Number(props.year))
+    const eraLabel = eraName ? `（${eraName}）` : ''
+
     return [
       baseStructuredData,
       {
@@ -71,7 +74,7 @@ export const generateCalculatorStructuredData = (
         },
         startTime: props.year,
         endTime: YEAR_NOW.toString(),
-        description: `${props.year}年の${formatCurrency(
+        description: `${props.year}年${eraLabel}の${formatCurrency(
           Number(props.amount),
         )}${currencyLabel}を現在の日本円に換算した結果: ${formatCurrency(
           props.result,
@@ -83,12 +86,12 @@ export const generateCalculatorStructuredData = (
         mainEntity: [
           {
             '@type': 'Question',
-            name: `${props.year}年の${formatCurrency(
+            name: `${props.year}年${eraLabel}の${formatCurrency(
               Number(props.amount),
             )}${currencyLabel}は今いくらですか？`,
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `${props.year}年の${formatCurrency(
+              text: `${props.year}年${eraLabel}の${formatCurrency(
                 Number(props.amount),
               )}${currencyLabel}は、現在の価値で約${formatCurrency(
                 props.result,

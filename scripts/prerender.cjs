@@ -58,6 +58,17 @@ const CURRENCY_LABELS = {
   eur: 'ユーロ',
 }
 
+// 西暦→和暦変換
+function toJapaneseEra(year) {
+  const y = Number(year)
+  if (y >= 2019) return `令和${y - 2018 === 1 ? '元' : y - 2018}年`
+  if (y >= 1989) return `平成${y - 1988 === 1 ? '元' : y - 1988}年`
+  if (y >= 1926) return `昭和${y - 1925 === 1 ? '元' : y - 1925}年`
+  if (y >= 1912) return `大正${y - 1911 === 1 ? '元' : y - 1911}年`
+  if (y >= 1868) return `明治${y - 1867}年`
+  return null
+}
+
 // CPI データ読み込み
 const cpiData = JSON.parse(
   fs.readFileSync(
@@ -114,6 +125,8 @@ function generateStructuredData(year, currency, amount, result) {
   const currencyLabel = CURRENCY_LABELS[currency]
   const formattedAmount = formatCurrency(Number(amount))
   const formattedResult = formatCurrency(result)
+  const eraName = toJapaneseEra(year)
+  const eraLabel = eraName ? `（${eraName}）` : ''
 
   const data = [
     {
@@ -139,10 +152,10 @@ function generateStructuredData(year, currency, amount, result) {
       mainEntity: [
         {
           '@type': 'Question',
-          name: `${year}年の${formattedAmount}${currencyLabel}は今いくらですか？`,
+          name: `${year}年${eraLabel}の${formattedAmount}${currencyLabel}は今いくらですか？`,
           acceptedAnswer: {
             '@type': 'Answer',
-            text: `${year}年の${formattedAmount}${currencyLabel}は、現在の価値で約${formattedResult}円に相当します。この計算は消費者物価指数（CPI）データに基づいて行われています。`,
+            text: `${year}年${eraLabel}の${formattedAmount}${currencyLabel}は、現在の価値で約${formattedResult}円に相当します。この計算は消費者物価指数（CPI）データに基づいて行われています。`,
           },
         },
         {
@@ -171,12 +184,15 @@ function generateHTML(template, { year, currency, amount, result }) {
   const formattedAmount = formatCurrency(Number(amount))
   const formattedResult = formatCurrency(result)
   const canonicalUrl = `https://${DOMAIN}/${year}/${currency}/${amount}`
+  const eraName = toJapaneseEra(year)
+  const eraLabel = eraName ? `（${eraName}）` : ''
+  const eraKeyword = eraName ? `,${eraName}` : ''
 
   const title = `${year}年の${formattedAmount}${currencyLabel}は今${formattedResult}円 | 今いくら`
-  const description = `${year}年の${formattedAmount}${currencyLabel}を現在の日本円に換算すると${formattedResult}円です。インフレ率を考慮した正確な価値を計算できます。`
+  const description = `${year}年${eraLabel}の${formattedAmount}${currencyLabel}を現在の日本円に換算すると${formattedResult}円です。インフレ率を考慮した正確な価値を計算できます。`
   const ogTitle = `${year}年の${formattedAmount}${currencyLabel}は今${formattedResult}円！`
-  const ogDescription = `昔のお金の価値を今の価値に換算。${year}年の${formattedAmount}${currencyLabel}は現在の${formattedResult}円相当です。`
-  const keywords = `インフレ計算,${year}年,${currencyLabel},物価,昔の価値,現在価値,CPI,消費者物価指数`
+  const ogDescription = `昔のお金の価値を今の価値に換算。${year}年${eraLabel}の${formattedAmount}${currencyLabel}は現在の${formattedResult}円相当です。`
+  const keywords = `インフレ計算,${year}年${eraKeyword},${currencyLabel},物価,昔の価値,現在価値,CPI,消費者物価指数,貨幣価値 換算`
 
   let html = template
 
