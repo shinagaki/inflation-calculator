@@ -17,6 +17,10 @@ const DOMAIN = 'imaikura.creco.net'
 const OG_IMAGE_BASE = 'https://creco.net/misc/imaikura/og'
 const DIST_DIR = path.join(__dirname, '..', 'dist')
 const YEAR_NOW = new Date().getFullYear()
+const DATE_PARAM = (() => {
+  const now = new Date()
+  return `${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`
+})()
 
 // フォールバック為替レート（CoinGecko BTC 基準: JPY/通貨）
 const FALLBACK_RATES = {
@@ -230,7 +234,7 @@ function generateHTML(template, { year, currency, amount, result }) {
   )
 
   // OG image
-  const ogImageUrl = `${OG_IMAGE_BASE}/${year}/${currency}/${amount}.png?r=${result}`
+  const ogImageUrl = `${OG_IMAGE_BASE}/${year}/${currency}/${amount}.png?r=${result}&d=${DATE_PARAM}`
   html = html.replace(
     /<meta property="og:image" content=".*?" \/>/,
     `<meta property="og:image" content="${ogImageUrl}" />`,

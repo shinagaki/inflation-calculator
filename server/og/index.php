@@ -47,8 +47,9 @@ if ($year < YEAR_MIN || $year > $yearNow) {
 
 // ---------- キャッシュ確認 ----------
 
+$dateKey = date('md');
 $cacheSubDir = CACHE_DIR . "/{$year}/{$currency}";
-$cacheFile = "{$cacheSubDir}/{$amount}_{$result}.png";
+$cacheFile = "{$cacheSubDir}/{$amount}_{$result}_{$dateKey}.png";
 
 if (file_exists($cacheFile)) {
     header('Content-Type: image/png');
