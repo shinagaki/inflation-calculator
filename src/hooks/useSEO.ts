@@ -47,14 +47,15 @@ const generateSEOTags = (data: SEOData): SEOMetaTags => {
     const formattedResult = formatCurrency(data.result)
     const eraName = toJapaneseEra(Number(data.year))
     const eraKeyword = eraName ? `,${eraName}` : ''
+    const yearsAgo = new Date().getFullYear() - Number(data.year)
 
     return {
       title: `${data.year}年の${formattedAmount}${currencyLabel}は今${formattedResult}円 | 今いくら`,
-      description: `${data.year}年${eraName ? `（${eraName}）` : ''}の${formattedAmount}${currencyLabel}を現在の日本円に換算すると${formattedResult}円です。インフレ率を考慮した正確な価値を計算できます。`,
-      keywords: `インフレ計算,${data.year}年${eraKeyword},${currencyLabel},物価,昔の価値,現在価値,CPI,消費者物価指数,貨幣価値 換算`,
+      description: `${data.year}年${eraName ? `（${eraName}）` : ''}の${formattedAmount}${currencyLabel}を現在の日本円に換算すると${formattedResult}円です。${yearsAgo}年前のお金の価値をインフレ率で正確に計算。`,
+      keywords: `インフレ計算,${data.year}年${eraKeyword},${yearsAgo}年前,${currencyLabel},物価,昔の価値,現在価値,CPI,消費者物価指数,貨幣価値 換算`,
       ogTitle: `💰${data.year}年の${formattedAmount}${currencyLabel}は今${formattedResult}円！`,
       ogDescription: `昔のお金の価値を今の価値に換算。${data.year}年の${formattedAmount}${currencyLabel}は現在の${formattedResult}円相当です。`,
-      ogUrl: `https://${URL_DOMAIN}${data.location || '/'}`,
+      ogUrl: `https://${URL_DOMAIN}${data.location ? `${data.location}${data.location.endsWith('/') ? '' : '/'}` : '/'}`,
       ogImage: `${OG_IMAGE_BASE}/${data.year}/${data.currency}/${data.amount}.png?r=${data.result}&d=${getDateParam()}`,
       twitterTitle: `${data.year}年の${formattedAmount}${currencyLabel} → 今なら${formattedResult}円！`,
       twitterDescription: `昔のお金の価値、今と比べてどれくらい？インフレ計算で正確に算出。`,

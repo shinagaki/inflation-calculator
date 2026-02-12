@@ -23,6 +23,7 @@ const SEOContentComponent = ({
 
   const currencyName = currencyNames[currency as keyof typeof currencyNames] || currency.toUpperCase()
   const currentYear = new Date().getFullYear()
+  const yearsAgo = currentYear - parseInt(year)
   const eraName = toJapaneseEra(parseInt(year))
   const yearLabel = eraName ? `${year}年（${eraName}）` : `${year}年`
   
@@ -30,7 +31,7 @@ const SEOContentComponent = ({
     <div className='mt-8 space-y-6 text-sm text-gray-700 bg-white/80 backdrop-blur-sm rounded-lg p-6'>
       <section>
         <h2 className='text-xl font-bold mb-4 text-gray-900'>
-          {yearLabel}の{currencyName}の価値を現在の日本円で計算
+          {yearLabel}（{yearsAgo}年前）の{currencyName}の価値を現在の日本円で計算
         </h2>
 
         <div className='space-y-3'>
@@ -48,8 +49,9 @@ const SEOContentComponent = ({
           )}
 
           <p>
-            この結果は{currentYear - parseInt(year)}年間のインフレ率（物価上昇率）を考慮した正確な計算です。
-            投資判断や歴史的価値の比較、経済分析の参考資料としてご活用ください。
+            この結果は{yearsAgo}年間のインフレ率（物価上昇率）を考慮した正確な計算です。
+            「{yearsAgo}年前のお金の価値」「{yearsAgo}年前の{amount}{currency.toUpperCase()}は今いくら」
+            といった疑問にお答えします。投資判断や歴史的価値の比較、経済分析の参考資料としてご活用ください。
           </p>
         </div>
       </section>

@@ -52,6 +52,7 @@ export const generateCalculatorStructuredData = (
 
     const eraName = toJapaneseEra(Number(props.year))
     const eraLabel = eraName ? `（${eraName}）` : ''
+    const yearsAgo = YEAR_NOW - Number(props.year)
 
     return [
       baseStructuredData,
@@ -86,12 +87,12 @@ export const generateCalculatorStructuredData = (
         mainEntity: [
           {
             '@type': 'Question',
-            name: `${props.year}年${eraLabel}の${formatCurrency(
+            name: `${props.year}年${eraLabel}（${yearsAgo}年前）の${formatCurrency(
               Number(props.amount),
             )}${currencyLabel}は今いくらですか？`,
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `${props.year}年${eraLabel}の${formatCurrency(
+              text: `${yearsAgo}年前（${props.year}年${eraLabel}）の${formatCurrency(
                 Number(props.amount),
               )}${currencyLabel}は、現在の価値で約${formatCurrency(
                 props.result,

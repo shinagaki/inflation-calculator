@@ -209,7 +209,7 @@ function generateSitemapXml(routes) {
 
     lines.push('  <url>')
     lines.push(
-      `    <loc>https://${DOMAIN}/${route.year}/${route.currency}/${route.amount}</loc>`,
+      `    <loc>https://${DOMAIN}/${route.year}/${route.currency}/${route.amount}/</loc>`,
     )
     lines.push(`    <lastmod>${TODAY}</lastmod>`)
     lines.push('    <changefreq>monthly</changefreq>')
