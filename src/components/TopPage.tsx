@@ -32,7 +32,6 @@ export const TopPage = () => {
     !validateAmount(params.amount)
   )
 
-  // 無効なパラメータの場合はデフォルトにリダイレクト（useEffect で副作用として実行）
   useEffect(() => {
     if (isInvalidParams) {
       setLocation('/')
@@ -55,7 +54,6 @@ export const TopPage = () => {
   const { retry, isUsingFallback, error: ratesError } = useExchangeRates()
   const { cpiData } = useCpiData()
 
-  // SEO optimization
   useSEO({
     year,
     currency,
@@ -78,9 +76,8 @@ export const TopPage = () => {
 
   return (
     <>
-      {/* メイン計算機 - 常に固定幅 */}
-      <div className='bg-white/50 hover:bg-white/60 backdrop-blur-lg border border-white/25 shadow-[0_8px_32px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-2xl px-8 py-6 max-w-xl mx-auto transition-shadow duration-300'>
-        <div className='mb-5 sm:mb-10'>
+      <div className='bg-white/85 backdrop-blur-lg border border-primary-200/50 shadow-card hover:shadow-card-hover rounded-xl px-4 sm:px-8 py-5 w-full max-w-xl mx-auto my-2 transition-shadow duration-200'>
+        <div className='mb-4 sm:mb-6'>
           <InflationForm
             year={year}
             currency={currency}
@@ -91,7 +88,7 @@ export const TopPage = () => {
           />
         </div>
 
-        <hr className='h-px bg-zinc-200 border-0 sm:my-8' />
+        <hr className='h-px bg-primary-200/50 border-0 sm:my-6' />
         <InflationResult
           result={result}
           resultStatement={resultStatement}
@@ -107,22 +104,28 @@ export const TopPage = () => {
           amount={amount}
         />
 
-        {/* 詳細表示ボタン */}
         {match && !loading && !error && result != null && (
           <div className='mt-6 text-center'>
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className='px-6 py-2 bg-white/60 hover:bg-white/80 text-zinc-700 hover:text-zinc-900 font-medium rounded-lg border border-white/40 hover:border-white/60 backdrop-blur-sm transition-all duration-200 shadow-sm hover:shadow-md'
+              className='px-6 py-2.5 bg-primary-50 hover:bg-primary-100 text-primary-700 hover:text-primary-900 font-medium rounded-lg border border-primary-200 hover:border-primary-300 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-400/30'
+              aria-expanded={showDetails}
+              aria-controls='detail-section'
             >
-              {showDetails ? '詳細を隠す ▲' : '詳細な解説・関連情報を見る ▼'}
+              {showDetails ? '詳細を隠す' : '詳細な解説・関連情報を見る'}
+              <span
+                className={`inline-block ml-2 transition-transform duration-200 ${showDetails ? 'rotate-180' : ''}`}
+                aria-hidden='true'
+              >
+                &#9660;
+              </span>
             </button>
           </div>
         )}
       </div>
 
-      {/* SEOコンテンツセクション（トグル表示） - 独立したコンテナ */}
       {showDetails && match && !loading && !error && (
-        <div className='w-full max-w-4xl mx-auto px-4 mt-8'>
+        <div id='detail-section' className='w-full max-w-4xl mx-auto px-4 mt-8'>
           <SEOContent
             year={year}
             currency={currency}
@@ -143,7 +146,7 @@ export const TopPage = () => {
             currentCurrency={currency}
             currentAmount={amount}
           />
-          
+
           <FAQSection />
         </div>
       )}

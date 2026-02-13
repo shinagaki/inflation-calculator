@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 
+const prefersReducedMotion =
+  typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : null
+
 export const useCountUp = (target: number, duration = 600): number => {
   const [current, setCurrent] = useState(target)
   const prevTarget = useRef(target)
@@ -7,6 +12,12 @@ export const useCountUp = (target: number, duration = 600): number => {
 
   useEffect(() => {
     if (prevTarget.current === target) return
+
+    if (prefersReducedMotion?.matches) {
+      prevTarget.current = target
+      setCurrent(target)
+      return
+    }
 
     const start = prevTarget.current
     const diff = target - start
@@ -37,7 +48,7 @@ export const useCountUp = (target: number, duration = 600): number => {
   useEffect(() => {
     prevTarget.current = target
     setCurrent(target)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return current

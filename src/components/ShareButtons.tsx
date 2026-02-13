@@ -80,39 +80,39 @@ const ShareButtons = ({
       <TwitterShareButton
         url={shareUrl}
         title={shareStatement}
-        className={`${buttonClass} focus:ring-blue-400`}
+        className={`${buttonClass} focus:ring-primary-400`}
         aria-label='計算結果をXでシェア'
         onClick={() => handleShare('twitter')}
       >
-        <XIcon size={36} round className='sm:!w-8 sm:!h-8' aria-hidden='true' />
+        <span className='block w-9 h-9 sm:w-8 sm:h-8 [&>svg]:w-full [&>svg]:h-full'><XIcon size={36} round aria-hidden='true' /></span>
       </TwitterShareButton>
       <BlueskyShareButton
         url={shareUrl}
         title={shareStatement}
-        className={`${buttonClass} focus:ring-blue-400`}
+        className={`${buttonClass} focus:ring-primary-400`}
         aria-label='計算結果をBlueskyでシェア'
         onClick={() => handleShare('bluesky')}
       >
-        <BlueskyIcon size={36} round className='sm:!w-8 sm:!h-8' aria-hidden='true' />
+        <span className='block w-9 h-9 sm:w-8 sm:h-8 [&>svg]:w-full [&>svg]:h-full'><BlueskyIcon size={36} round aria-hidden='true' /></span>
       </BlueskyShareButton>
       <LineShareButton
         url={shareUrl}
         title={shareStatement}
-        className={`${buttonClass} focus:ring-green-400`}
+        className={`${buttonClass} focus:ring-primary-400`}
         aria-label='計算結果をLINEでシェア'
         onClick={() => handleShare('line')}
       >
-        <LineIcon size={36} round className='sm:!w-8 sm:!h-8' aria-hidden='true' />
+        <span className='block w-9 h-9 sm:w-8 sm:h-8 [&>svg]:w-full [&>svg]:h-full'><LineIcon size={36} round aria-hidden='true' /></span>
       </LineShareButton>
       <button
         type='button'
         onClick={handleCopy}
-        className={`${buttonClass} focus:ring-gray-400`}
+        className={`${buttonClass} focus:ring-primary-400`}
         aria-label={copied ? 'コピーしました' : '計算結果をコピー'}
       >
         <span
           className={`w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white transition-colors ${
-            copied ? 'bg-green-500' : 'bg-gray-500'
+            copied ? 'bg-accent-500' : 'bg-primary-600'
           }`}
         >
           <CopyIcon copied={copied} />

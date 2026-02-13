@@ -6,23 +6,20 @@ import { useAnalytics } from './hooks/useAnalytics'
 
 const App = () => {
   const [backgroundLoaded, setBackgroundLoaded] = useState(false)
-  
+
   // Analytics initialization
   useAnalytics()
 
   useEffect(() => {
-    // 画像の遅延読み込みとパフォーマンス最適化
     const loadBackgroundImage = () => {
       const img = new Image()
       img.onload = () => setBackgroundLoaded(true)
       img.onerror = () => {
-        // WebPが失敗した場合のフォールバック（将来の拡張用）
         setBackgroundLoaded(true)
       }
       img.src = '/img/background.webp'
     }
 
-    // Critical Resource Hintを活用して優先度を下げる
     if (document.readyState === 'complete') {
       setTimeout(loadBackgroundImage, 100)
     } else {
@@ -34,125 +31,81 @@ const App = () => {
 
   return (
     <div
-      className={`min-h-dvh w-full flex flex-col text-zinc-900 bg-cover transition-opacity duration-300 ${
+      className={`min-h-dvh w-full flex flex-col text-primary-900 font-body bg-cover transition-opacity duration-300 ${
         backgroundLoaded
-          ? 'bg-[url("/img/background.webp")] opacity-100'
-          : 'bg-gradient-to-br from-slate-100 to-slate-200 opacity-90'
+          ? 'bg-[url("/img/background.webp")] bg-fixed opacity-100'
+          : 'bg-primary-50 opacity-90'
       }`}
     >
-      <header className='flex items-center justify-center bg-gradient-to-b from-white/95 via-white/70 via-80% to-white/0 pb-5 sm:pb-10'>
-        <div className='flex flex-col items-center justify-center py-0 text-center sm:py-10'>
-          <h1 className='my-2 sm:my-4 font-bold text-4xl sm:text-6xl tracking-tight bg-gradient-to-b from-zinc-300 via-zinc-500 via-20% to-zinc-700 bg-clip-text text-transparent sm:first-letter:text-7xl first-letter:text-5xl first-letter:pr-2'>
-            <Link href='/' className='link'>
+      <a href='#main-content' className='skip-link'>
+        メインコンテンツへスキップ
+      </a>
+
+      <header className='bg-gradient-to-b from-primary-50/95 via-primary-50/80 to-transparent pb-2 sm:pb-4'>
+        <div className='flex flex-col items-center justify-center py-3 sm:py-6 text-center max-w-2xl mx-auto px-4'>
+          <h1 className='my-1 sm:my-3 font-heading font-black text-4xl sm:text-6xl tracking-tight text-primary-900'>
+            <Link
+              href='/'
+              className='hover:text-primary-700 transition-colors duration-200'
+            >
               今いくら
             </Link>
           </h1>
-          <p className='text-sm sm:text-base text-zinc-700 mx-2 my-2 leading-2 sm:leading-6'>
+          <p className='text-sm sm:text-base text-primary-800 mx-2 my-1 leading-relaxed'>
             あの時代のドルってどれくらいの価値なんだろう？
             <br />
             西暦と金額を入れるだけで、現在の日本円に換算します
           </p>
-          <div className='flex flex-col items-center justify-center text-xs sm:text-sm'>
-            <h3 className='text-zinc-900 font-bold pr-5'>計算例</h3>
-            <ul className='flex space-x-2 underline whitespace-nowrap mb-2'>
-              <li>
-                <Link href='/1950/usd/100' className='link hover:text-zinc-500'>
-                  1950年の
-                  <wbr />
-                  100ドル
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/1980/jpy/10000'
-                  className='link hover:text-zinc-500'
-                >
-                  1980年の
-                  <wbr />
-                  1万円
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/2010/eur/50000'
-                  className='link hover:text-zinc-500'
-                >
-                  2010年の
-                  <wbr />
-                  5万ユーロ
-                </Link>
-              </li>
-            </ul>
-            <h3 className='text-zinc-900 font-bold pr-5'>制限事項</h3>
-            <p>日本円は1947年、ユーロは1996年から計算ができます</p>
-            <p>為替レートは最新のデータを使用しています</p>
-          </div>
+          <nav aria-label='計算例' className='mt-2 bg-white/40 backdrop-blur-sm rounded-lg px-3 py-1'>
+            <span className='text-primary-800 font-bold text-xs sm:text-sm'>計算例:</span>{' '}
+            <Link href='/1950/usd/100' className='underline text-primary-700 hover:text-primary-500 transition-colors duration-200 text-xs sm:text-sm'>1950年の100ドル</Link>{' '}
+            <Link href='/1980/jpy/10000' className='underline text-primary-700 hover:text-primary-500 transition-colors duration-200 text-xs sm:text-sm'>1980年の1万円</Link>{' '}
+            <Link href='/2010/eur/50000' className='underline text-primary-700 hover:text-primary-500 transition-colors duration-200 text-xs sm:text-sm'>2010年の5万ユーロ</Link>
+          </nav>
+          <p className='text-xs sm:text-sm text-primary-800 mt-1.5 bg-white/40 backdrop-blur-sm rounded-lg px-3 py-1'>
+            <strong>制限事項:</strong>{' '}
+            日本円は1947年、ユーロは1996年から計算可能。為替レートは最新データを使用。
+          </p>
         </div>
       </header>
-      <main className='flex-grow flex flex-col items-center justify-center'>
+
+      <main
+        id='main-content'
+        className='flex-grow flex flex-col items-center justify-center px-4'
+      >
         <Switch>
           <Route path='/' component={TopPage} />
           <Route path='/:year/:currency/:amount' component={TopPage} />
           <Route>
-            <h2>Not Found</h2>
+            <div className='text-center py-20'>
+              <h2 className='text-2xl font-heading font-bold text-primary-900 mb-4'>
+                ページが見つかりません
+              </h2>
+              <Link
+                href='/'
+                className='text-primary-600 underline hover:text-primary-800 transition-colors duration-200'
+              >
+                トップページへ戻る
+              </Link>
+            </div>
           </Route>
         </Switch>
       </main>
-      <footer className='w-full flex items-center justify-between gap-2 p-2 sm:p-4 text-xs sm:text-sm text-zinc-200 bg-gradient-to-t from-black/95 via-black/30 via-80% to-black/0 whitespace-nowrap'>
-        <div className='flex text-[0.75em] overflow-x-auto'>
-          <p>ソース：</p>
-          <ul className='flex space-x-1'>
-            <li>
-              <Link
-                href='https://www.stat.go.jp/data/cpi/'
-                className='link underline hover:text-zinc-400'
-              >
-                🇯🇵 総務省
-              </Link>
-            </li>
-            <li>
-              <Link
-                href='https://www.bls.gov/cpi/'
-                className='link underline hover:text-zinc-400'
-              >
-                🇺🇸 DOL
-              </Link>
-            </li>
-            <li>
-              <Link
-                href='https://www.ons.gov.uk/economy/inflationandpriceindices/'
-                className='link underline hover:text-zinc-400'
-              >
-                🇬🇧 ONS
-              </Link>
-            </li>
-            <li>
-              <Link
-                href='https://ec.europa.eu/eurostat'
-                className='link underline hover:text-zinc-400'
-              >
-                🇪🇺 eurostat
-              </Link>
-            </li>
-            <li>
-              <Link
-                href='https://www.coingecko.com/'
-                className='link underline hover:text-zinc-400'
-              >
-                💹 CoinGecko
-              </Link>
-            </li>
-          </ul>
-          <span className='text-zinc-400 ml-1'>（CPIデータ{YEAR_NOW}年更新）</span>
-        </div>
-        <div className='text-right'>
-          ©{YEAR_NOW}{' '}
-          <Link
-            href='https://creco.net/'
-            className='link underline hover:text-zinc-400'
-          >
-            creco
-          </Link>
+
+      <footer className='w-full py-2 px-4 sm:px-6 bg-primary-950/95 text-primary-100'>
+        <div className='max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs'>
+          <span className='text-primary-400'>データ:</span>
+          <a href='https://www.stat.go.jp/data/cpi/' className='underline hover:text-primary-300 transition-colors duration-200' target='_blank' rel='noopener noreferrer'>🇯🇵 総務省</a>
+          <a href='https://www.bls.gov/cpi/' className='underline hover:text-primary-300 transition-colors duration-200' target='_blank' rel='noopener noreferrer'>🇺🇸 DOL</a>
+          <a href='https://www.ons.gov.uk/economy/inflationandpriceindices/' className='underline hover:text-primary-300 transition-colors duration-200' target='_blank' rel='noopener noreferrer'>🇬🇧 ONS</a>
+          <a href='https://ec.europa.eu/eurostat' className='underline hover:text-primary-300 transition-colors duration-200' target='_blank' rel='noopener noreferrer'>🇪🇺 eurostat</a>
+          <a href='https://www.coingecko.com/' className='underline hover:text-primary-300 transition-colors duration-200' target='_blank' rel='noopener noreferrer'>💹 CoinGecko</a>
+          <span className='text-primary-500'>|</span>
+          <span className='text-primary-400'>CPI {YEAR_NOW}年更新</span>
+          <span className='text-primary-500'>|</span>
+          <span className='text-primary-400'>&copy;{YEAR_NOW}{' '}
+            <a href='https://creco.net/' className='underline hover:text-primary-300 transition-colors duration-200' target='_blank' rel='noopener noreferrer'>creco</a>
+          </span>
         </div>
       </footer>
     </div>

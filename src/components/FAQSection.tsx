@@ -5,25 +5,41 @@ interface FAQItemProps {
   answer: string
   isOpen: boolean
   onToggle: () => void
+  id: string
 }
 
-const FAQItem = ({ question, answer, isOpen, onToggle }: FAQItemProps) => (
-  <div className='border border-gray-200 rounded-lg overflow-hidden'>
-    <button
-      className='w-full px-4 py-3 text-left bg-gray-50 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none flex justify-between items-center'
-      onClick={onToggle}
-      aria-expanded={isOpen}
+const FAQItem = ({ question, answer, isOpen, onToggle, id }: FAQItemProps) => (
+  <div className='border border-primary-200 rounded-lg overflow-hidden'>
+    <h3>
+      <button
+        className='w-full px-4 py-3 text-left bg-primary-50/50 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-400/30 flex justify-between items-center transition-colors duration-200'
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-controls={`faq-answer-${id}`}
+        id={`faq-question-${id}`}
+      >
+        <span className='font-medium text-primary-900 pr-4'>{question}</span>
+        <span
+          className={`flex-shrink-0 w-5 h-5 flex items-center justify-center text-primary-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          aria-hidden='true'
+        >
+          <svg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='currentColor' strokeWidth='2'>
+            <path d='M2 4l4 4 4-4' />
+          </svg>
+        </span>
+      </button>
+    </h3>
+    <div
+      id={`faq-answer-${id}`}
+      role='region'
+      aria-labelledby={`faq-question-${id}`}
+      hidden={!isOpen}
+      className={isOpen ? 'px-4 py-3 bg-white' : ''}
     >
-      <span className='font-medium text-gray-900'>{question}</span>
-      <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
-        ▼
-      </span>
-    </button>
-    {isOpen && (
-      <div className='px-4 py-3 bg-white'>
-        <p className='text-sm text-gray-700 leading-relaxed'>{answer}</p>
-      </div>
-    )}
+      {isOpen && (
+        <p className='text-sm text-primary-700 leading-relaxed'>{answer}</p>
+      )}
+    </div>
   </div>
 )
 
@@ -31,8 +47,8 @@ const FAQSectionComponent = () => {
   const [openItems, setOpenItems] = useState<number[]>([])
 
   const toggleItem = (index: number) => {
-    setOpenItems(prev => 
-      prev.includes(index) 
+    setOpenItems(prev =>
+      prev.includes(index)
         ? prev.filter(i => i !== index)
         : [...prev, index]
     )
@@ -82,15 +98,16 @@ const FAQSectionComponent = () => {
   ]
 
   return (
-    <div className='mt-8 bg-white/80 backdrop-blur-sm rounded-lg p-6'>
-      <h2 className='text-xl font-bold mb-6 text-gray-900'>
+    <section className='mt-8 bg-white/90 backdrop-blur-sm rounded-xl border border-primary-200/50 p-6' aria-labelledby='faq-heading'>
+      <h2 id='faq-heading' className='text-lg font-heading font-bold mb-6 text-primary-900'>
         よくある質問（FAQ）
       </h2>
-      
-      <div className='space-y-3'>
+
+      <div className='space-y-2' role='group' aria-label='FAQ一覧'>
         {faqs.map((faq, index) => (
           <FAQItem
             key={index}
+            id={index.toString()}
             question={faq.question}
             answer={faq.answer}
             isOpen={openItems.includes(index)}
@@ -98,15 +115,15 @@ const FAQSectionComponent = () => {
           />
         ))}
       </div>
-      
-      <div className='mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200'>
-        <p className='text-sm text-blue-800'>
+
+      <div className='mt-6 p-4 bg-primary-50 rounded-lg border border-primary-200'>
+        <p className='text-sm text-primary-800'>
           <strong>その他のご質問は：</strong>
           計算に関する詳しいご質問や機能のリクエストがございましたら、
           お気軽にお問い合わせください。より良いサービス提供に努めます。
         </p>
       </div>
-    </div>
+    </section>
   )
 }
 

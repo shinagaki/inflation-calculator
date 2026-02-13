@@ -30,42 +30,54 @@
   z-index: 9999;
 }
 
+/* スキップナビゲーションリンク */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary, #0891B2);
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 0 0 0.5rem 0.5rem;
+  text-decoration: none;
+  transition: top 200ms ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
 /* 高コントラストモード対応 */
 @media (prefers-contrast: high) {
+  .bg-white\/85,
   .bg-white\/90 {
     background-color: rgb(255 255 255 / 1) !important;
   }
-  
-  .text-zinc-900 {
+
+  .text-primary-900 {
     color: #000000 !important;
   }
-  
-  .text-zinc-200 {
+
+  .text-primary-100 {
     color: #ffffff !important;
   }
-  
-  .border-zinc-300 {
+
+  .border-primary-200 {
     border-color: #000000 !important;
   }
 }
 
 /* 動きを減らす設定に対応 */
 @media (prefers-reduced-motion: reduce) {
-  .transition-opacity,
-  .transition-colors,
-  .animate-pulse {
-    transition: none !important;
-    animation: none !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-}
-
-/* フォーカスリングの改善 */
-.focus\:ring-2:focus {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-}
-
-/* キーボードナビゲーション時のみフォーカスリングを表示 */
-.js-focus-visible .focus\:ring-2:focus:not(.focus-visible) {
-  box-shadow: none;
 }
