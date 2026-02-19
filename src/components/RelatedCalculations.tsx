@@ -22,7 +22,7 @@ const RelatedCalculationsComponent = ({
   const [, setLocation] = useLocation()
 
   const handleLinkClick = (year: string, currency: string, amount: string) => {
-    setLocation(`/${year}/${currency}/${amount}`)
+    setLocation(`/${year}/${currency}/${amount}/`)
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }, 100)

@@ -58,9 +58,9 @@ const App = () => {
           </p>
           <nav aria-label='計算例' className='mt-2 bg-white/40 backdrop-blur-sm rounded-lg px-3 py-1'>
             <span className='text-primary-800 font-bold text-xs sm:text-sm'>計算例:</span>{' '}
-            <Link href='/1950/usd/100' className='underline text-primary-700 hover:text-primary-500 transition-colors duration-200 text-xs sm:text-sm'>1950年の100ドル</Link>{' '}
-            <Link href='/1980/jpy/10000' className='underline text-primary-700 hover:text-primary-500 transition-colors duration-200 text-xs sm:text-sm'>1980年の1万円</Link>{' '}
-            <Link href='/2010/eur/50000' className='underline text-primary-700 hover:text-primary-500 transition-colors duration-200 text-xs sm:text-sm'>2010年の5万ユーロ</Link>
+            <Link href='/1950/usd/100/' className='underline text-primary-700 hover:text-primary-500 transition-colors duration-200 text-xs sm:text-sm'>1950年の100ドル</Link>{' '}
+            <Link href='/1980/jpy/10000/' className='underline text-primary-700 hover:text-primary-500 transition-colors duration-200 text-xs sm:text-sm'>1980年の1万円</Link>{' '}
+            <Link href='/2010/eur/50000/' className='underline text-primary-700 hover:text-primary-500 transition-colors duration-200 text-xs sm:text-sm'>2010年の5万ユーロ</Link>
           </nav>
           <p className='text-xs sm:text-sm text-primary-800 mt-1.5 bg-white/40 backdrop-blur-sm rounded-lg px-3 py-1'>
             <strong>制限事項:</strong>{' '}
@@ -75,6 +75,7 @@ const App = () => {
       >
         <Switch>
           <Route path='/' component={TopPage} />
+          <Route path='/:year/:currency/:amount/' component={TopPage} />
           <Route path='/:year/:currency/:amount' component={TopPage} />
           <Route>
             <div className='text-center py-20'>

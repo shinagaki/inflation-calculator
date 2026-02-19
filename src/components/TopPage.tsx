@@ -63,15 +63,15 @@ export const TopPage = () => {
   })
 
   const handleChangeYear = (yearNew: string) => {
-    setLocation(`/${yearNew}/${currency}/${amount}`)
+    setLocation(`/${yearNew}/${currency}/${amount}/`)
   }
 
   const handleChangeCurrency = (currencyNew: string) => {
-    setLocation(`/${year}/${currencyNew}/${amount}`)
+    setLocation(`/${year}/${currencyNew}/${amount}/`)
   }
 
   const handleChangeAmount = (amountNew: string) => {
-    setLocation(`/${year}/${currency}/${amountNew}`)
+    setLocation(`/${year}/${currency}/${amountNew}/`)
   }
 
   return (
